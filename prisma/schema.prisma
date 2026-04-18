@@ -1,0 +1,55 @@
+// Maal Manager — Al-Madina General Store
+// Inventory + reorder alerts for a Pakistani kiryana store.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Category {
+  id       Int       @id @default(autoincrement())
+  name     String    @unique
+  icon     String
+  products Product[]
+}
+
+model Product {
+  id            Int             @id @default(autoincrement())
+  name          String
+  categoryId    Int
+  category      Category        @relation(fields: [categoryId], references: [id])
+  unit          String
+  currentStock  Int
+  minStock      Int
+  reorderQty    Int
+  purchasePrice Decimal         @db.Decimal(10, 2)
+  sellingPrice  Decimal         @db.Decimal(10, 2)
+  supplierName  String?
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  movements     StockMovement[]
+
+  @@index([categoryId])
+}
+
+enum MovementType {
+  RESTOCK
+  SALE
+  ADJUSTMENT
+}
+
+model StockMovement {
+  id        Int          @id @default(autoincrement())
+  productId Int
+  product   Product      @relation(fields: [productId], references: [id], onDelete: Cascade)
+  type      MovementType
+  quantity  Int
+  note      String?
+  createdAt DateTime     @default(now())
+
+  @@index([productId, createdAt])
+}
