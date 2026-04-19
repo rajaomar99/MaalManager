@@ -3,6 +3,8 @@ import { Geist, Geist_Mono, Noto_Nastaliq_Urdu } from "next/font/google";
 import { Toaster } from "@/components/ui/sonner";
 import { Navbar } from "@/components/Navbar";
 import { StoreHeader } from "@/components/StoreHeader";
+import { AlertBanner } from "@/components/AlertBanner";
+import { prisma } from "@/lib/prisma";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -30,20 +32,30 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+async function getLowStockCount() {
+  const products = await prisma.product.findMany({
+    select: { currentStock: true, minStock: true },
+  });
+  return products.filter((p) => p.currentStock <= p.minStock).length;
+}
+
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const alertCount = await getLowStockCount();
+
   return (
     <html
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} ${notoUrdu.variable} h-full antialiased`}
     >
       <body className="min-h-full bg-background text-foreground">
-        <Navbar />
+        <Navbar alertCount={alertCount} />
         <div className="min-h-screen md:pl-60">
           <StoreHeader />
+          <AlertBanner count={alertCount} />
           <main className="mx-auto max-w-6xl px-4 pb-24 pt-4 md:px-6 md:pb-10 md:pt-6">
             {children}
           </main>

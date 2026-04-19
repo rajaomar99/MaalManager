@@ -286,10 +286,10 @@ currentStock > minStock     → green  "OK"
 - Warm green color scheme — trustworthy, clean, not sterile
 - Empty states — helpful messages not blank screens
 - Loading skeletons on all data fetches — no layout shift
-- Error boundaries — friendly error UI if API fails
+- Error boundaries — friendly error UI if data fetch or anything fails
 - Page titles: "Maal Manager | Al-Madina General Store"
 - Emoji favicon: 🏪
-- Final Vercel deployment — verify all routes, seed data live
+- Final Vercel deployment — verify everything, seed data live
 
 ---
 
