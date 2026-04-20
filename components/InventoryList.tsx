@@ -176,6 +176,11 @@ export function InventoryList({
                       Min: {product.minStock} {product.unit}s
                     </span>
                     <span>{formatPKR(product.sellingPrice)}</span>
+                    {product.supplierName && (
+                      <span className="hidden sm:inline">
+                        Order from: {product.supplierName}
+                      </span>
+                    )}
                   </div>
                 </div>
 

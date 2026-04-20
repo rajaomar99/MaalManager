@@ -12,9 +12,10 @@ import {
   ArrowUpCircle,
   RefreshCw,
   TrendingDown,
+  TrendingUp,
 } from "lucide-react";
 import Link from "next/link";
-import { getFiveLowStockProducts, getStats } from "@/actions/products.action";
+import { getFiveLowStockProducts, getStats, getDailyRevenue } from "@/actions/products.action";
 import { getRecentMovements } from "@/actions/stockmovement.action";
 
 function MovementTypeIcon({ type }: { type: string }) {
@@ -50,10 +51,11 @@ function formatRelativeTime(dateStr: string | Date): string {
 export default async function DashboardPage() {
   await connection();
 
-  const [stats, lowStockProducts, recentMovements] = await Promise.all([
+  const [stats, lowStockProducts, recentMovements, dailyRevenue] = await Promise.all([
     getStats(),
     getFiveLowStockProducts(),
     getRecentMovements(),
+    getDailyRevenue(),
   ]);
 
   return (
@@ -94,6 +96,26 @@ export default async function DashboardPage() {
           subtitle="total at selling price"
         />
       </div>
+
+      {/* Today's Revenue */}
+      <Card className="border-emerald-200 bg-emerald-50/50 dark:border-emerald-900 dark:bg-emerald-950/20">
+        <CardContent className="flex items-center gap-4 p-4 sm:p-5">
+          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-emerald-100 dark:bg-emerald-900/40">
+            <TrendingUp className="h-6 w-6 text-emerald-600 dark:text-emerald-400" />
+          </div>
+          <div>
+            <p className="text-xs font-medium uppercase tracking-wider text-emerald-700 dark:text-emerald-400">
+              Today&apos;s Revenue
+            </p>
+            <p className="text-2xl font-bold text-emerald-800 dark:text-emerald-300">
+              {formatPKR(dailyRevenue)}
+            </p>
+            <p className="text-xs text-emerald-600/70 dark:text-emerald-500">
+              from sales recorded today
+            </p>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Low Stock + Recent Movements */}
       <div className="grid gap-4 lg:grid-cols-2">

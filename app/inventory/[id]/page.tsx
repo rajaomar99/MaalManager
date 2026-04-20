@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/table";
 import { StockBadge } from "@/components/StockBadge";
 import { QuickStockUpdate } from "@/components/QuickStockUpdate";
+import { QuickSaleDialog } from "@/components/QuickSaleDialog";
 import { DeleteProductDialog } from "@/components/DeleteProductDialog";
 import { ProductForm } from "@/components/ProductForm";
 import { formatPKR } from "@/lib/format";
@@ -152,9 +153,17 @@ export default async function ProductDetailPage({
                 {product.unit}s
               </span>
             </div>
-            <div className="mt-2">
+            <div className="mt-2 flex flex-wrap gap-2">
               <QuickStockUpdate
                 productId={product.id}
+                currentStock={product.currentStock}
+                unit={product.unit}
+              />
+            </div>
+            <div className="mt-2">
+              <QuickSaleDialog
+                productId={product.id}
+                productName={product.name}
                 currentStock={product.currentStock}
                 unit={product.unit}
               />

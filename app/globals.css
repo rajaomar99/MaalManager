@@ -117,6 +117,48 @@
   --sidebar-ring: oklch(0.72 0.15 155);
 }
 
+@media print {
+  /* Hide navigation, banners, and interactive elements */
+  nav,
+  aside,
+  header,
+  .print\:hidden,
+  [data-sonner-toaster] {
+    display: none !important;
+  }
+
+  /* Remove sidebar offset */
+  .md\:pl-60 {
+    padding-left: 0 !important;
+  }
+
+  /* Ensure cards render cleanly */
+  body {
+    background: white !important;
+    color: black !important;
+    font-size: 12pt;
+  }
+
+  /* Page title at top */
+  main::before {
+    content: "Al-Madina General Store — Restock List";
+    display: block;
+    font-size: 16pt;
+    font-weight: bold;
+    margin-bottom: 12pt;
+    border-bottom: 1pt solid #ccc;
+    padding-bottom: 6pt;
+  }
+
+  /* Cards should not break across pages */
+  .transition-shadow {
+    break-inside: avoid;
+    box-shadow: none !important;
+    border: 1pt solid #ddd;
+    margin-bottom: 8pt;
+  }
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;

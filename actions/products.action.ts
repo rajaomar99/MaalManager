@@ -346,6 +346,21 @@ export async function updateStock(
   }
 }
 
+export async function getDailyRevenue() {
+  const todayStart = new Date();
+  todayStart.setHours(0, 0, 0, 0);
+
+  const movements = await prisma.stockMovement.findMany({
+    where: { type: "SALE", createdAt: { gte: todayStart } },
+    include: { product: { select: { sellingPrice: true } } },
+  });
+
+  return movements.reduce(
+    (acc, m) => acc + Math.abs(m.quantity) * Number(m.product.sellingPrice),
+    0
+  );
+}
+
 export async function getLowStockCount() {
   const products = await prisma.product.findMany({
     select: { currentStock: true, minStock: true },

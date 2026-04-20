@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, Package, Bell, Store } from "lucide-react";
+import { LayoutDashboard, Package, Bell, Store, Tag } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 type NavItem = {
@@ -15,6 +15,7 @@ const items: NavItem[] = [
   { href: "/", label: "Dashboard", Icon: LayoutDashboard },
   { href: "/inventory", label: "Inventory", Icon: Package },
   { href: "/alerts", label: "Alerts", Icon: Bell },
+  { href: "/categories", label: "Categories", Icon: Tag },
 ];
 
 function isActive(pathname: string, href: string) {
@@ -67,7 +68,7 @@ export function Navbar({ alertCount = 0 }: { alertCount?: number }) {
       </aside>
 
       <nav className="fixed inset-x-0 bottom-0 z-30 border-t bg-background md:hidden">
-        <ul className="grid grid-cols-3">
+        <ul className="grid grid-cols-4">
           {items.map(({ href, label, Icon }) => {
             const active = isActive(pathname, href);
             const showBadge = href === "/alerts" && alertCount > 0;

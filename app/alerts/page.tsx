@@ -7,6 +7,7 @@ export const metadata: Metadata = {
 import { Card, CardContent } from "@/components/ui/card";
 import { StockBadge } from "@/components/StockBadge";
 import { RestockDialog } from "@/components/RestockDialog";
+import { PrintButton } from "@/components/PrintButton";
 import {
   AlertTriangle,
   Package,
@@ -21,18 +22,21 @@ export default async function AlertsPage() {
 
   return (
     <div className="space-y-6">
-      <div className="space-y-1">
-        <div className="flex items-center gap-2">
-          <AlertTriangle className="h-6 w-6 text-amber-600 dark:text-amber-400" />
-          <h2 className="text-2xl font-semibold tracking-tight">
-            Low Stock Alerts
-          </h2>
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div className="space-y-1">
+          <div className="flex items-center gap-2">
+            <AlertTriangle className="h-6 w-6 text-amber-600 dark:text-amber-400" />
+            <h2 className="text-2xl font-semibold tracking-tight">
+              Low Stock Alerts
+            </h2>
+          </div>
+          <p className="text-sm text-muted-foreground">
+            {lowStockProducts.length === 0
+              ? "All items are well-stocked. 🎉"
+              : `${lowStockProducts.length} item${lowStockProducts.length !== 1 ? "s" : ""} need restocking — sorted by most critical first.`}
+          </p>
         </div>
-        <p className="text-sm text-muted-foreground">
-          {lowStockProducts.length === 0
-            ? "All items are well-stocked. 🎉"
-            : `${lowStockProducts.length} item${lowStockProducts.length !== 1 ? "s" : ""} need restocking — sorted by most critical first.`}
-        </p>
+        {lowStockProducts.length > 0 && <PrintButton />}
       </div>
 
       {lowStockProducts.length === 0 ? (
