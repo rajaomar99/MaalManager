@@ -12,6 +12,7 @@ import {
   ArrowUpCircle,
   RefreshCw,
   TrendingDown,
+  LayoutDashboard,
 } from "lucide-react";
 import Link from "next/link";
 import { getFiveLowStockProducts, getStats, getDailyRevenue } from "@/actions/products.action";
@@ -61,7 +62,10 @@ export default async function DashboardPage() {
     <div className="space-y-6">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="space-y-1">
-          <h2 className="text-2xl font-bold tracking-tight md:text-3xl">Dashboard</h2>
+          <div className="flex items-center gap-2">
+            <LayoutDashboard className="h-6 w-6 text-primary" />
+            <h2 className="text-2xl font-bold tracking-tight md:text-3xl">Dashboard</h2>
+          </div>
           <p className="text-base text-muted-foreground">
             Here&apos;s your store overview.
           </p>

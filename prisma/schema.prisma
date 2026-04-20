@@ -1,6 +1,3 @@
-// Maal Manager — Al-Madina General Store
-// Inventory + reorder alerts for a Pakistani kiryana store.
-
 generator client {
   provider = "prisma-client-js"
 }

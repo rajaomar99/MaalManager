@@ -156,52 +156,57 @@ export function InventoryList({
               key={product.id}
               className="transition-shadow hover:shadow-md"
             >
-              <div className="flex items-center gap-3 p-4">
-                {/* Category Icon */}
-                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-muted text-2xl">
-                  {product.categoryIcon}
-                </div>
-
-                {/* Product Info */}
-                <div className="min-w-0 flex-1">
-                  <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
-                    <span className="text-base font-semibold leading-snug">
-                      {product.name}
-                    </span>
-                    <StockBadge status={product.stockStatus} />
+              <div className="flex flex-col gap-2 p-4 sm:flex-row sm:items-center sm:gap-3">
+                {/* Top row on mobile: icon + info */}
+                <div className="flex min-w-0 flex-1 items-center gap-3">
+                  {/* Category Icon */}
+                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-muted text-2xl">
+                    {product.categoryIcon}
                   </div>
-                  <div className="mt-1 flex flex-wrap gap-x-3 gap-y-0.5 text-sm text-muted-foreground">
-                    <span>{product.categoryName}</span>
-                    <span>
-                      Min: {product.minStock} {product.unit}s
-                    </span>
-                    <span className="font-medium text-foreground/70">{formatPKR(product.sellingPrice)}</span>
-                    {product.supplierName && (
-                      <span className="hidden sm:inline">
-                        {product.supplierName}
+
+                  {/* Product Info */}
+                  <div className="min-w-0 flex-1">
+                    <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
+                      <span className="text-base font-semibold leading-snug">
+                        {product.name}
                       </span>
-                    )}
+                      <StockBadge status={product.stockStatus} />
+                    </div>
+                    <div className="mt-1 flex flex-wrap gap-x-3 gap-y-0.5 text-sm text-muted-foreground">
+                      <span>{product.categoryName}</span>
+                      <span>
+                        Min: {product.minStock} {product.unit}s
+                      </span>
+                      <span className="font-medium text-foreground/70">{formatPKR(product.sellingPrice)}</span>
+                      {product.supplierName && (
+                        <span className="hidden sm:inline">
+                          {product.supplierName}
+                        </span>
+                      )}
+                    </div>
                   </div>
                 </div>
 
-                {/* Quick Stock Update */}
-                <QuickStockUpdate
-                  productId={product.id}
-                  currentStock={product.currentStock}
-                  unit={product.unit}
-                  onUpdate={(newStock, newStatus) =>
-                    handleStockUpdate(product.id, newStock, newStatus)
-                  }
-                />
+                {/* Bottom row on mobile (right-aligned): stock controls + arrow */}
+                <div className="flex items-center justify-end gap-2 sm:justify-normal">
+                  <QuickStockUpdate
+                    productId={product.id}
+                    currentStock={product.currentStock}
+                    unit={product.unit}
+                    onUpdate={(newStock, newStatus) =>
+                      handleStockUpdate(product.id, newStock, newStatus)
+                    }
+                  />
 
-                {/* View Details */}
-                <Link
-                  href={`/inventory/${productSlug(product.id, product.name)}`}
-                  className="ml-1 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-border bg-muted/50 text-muted-foreground transition-colors hover:border-primary/40 hover:bg-primary/5 hover:text-primary"
-                  title="View details"
-                >
-                  <ChevronRight className="h-5 w-5" />
-                </Link>
+                  {/* View Details */}
+                  <Link
+                    href={`/inventory/${productSlug(product.id, product.name)}`}
+                    className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-border bg-muted/50 text-muted-foreground transition-colors hover:border-primary/40 hover:bg-primary/5 hover:text-primary"
+                    title="View details"
+                  >
+                    <ChevronRight className="h-5 w-5" />
+                  </Link>
+                </div>
               </div>
             </Card>
           ))}

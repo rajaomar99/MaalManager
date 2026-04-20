@@ -47,7 +47,7 @@ const products: SeedProduct[] = [
 ];
 
 async function main() {
-  console.log("🌱 Seeding Al-Madina General Store...");
+  console.log("Seeding Al-Madina General Store...");
 
   await prisma.stockMovement.deleteMany();
   await prisma.product.deleteMany();

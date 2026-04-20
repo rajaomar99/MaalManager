@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, Package, Bell, Store, Tag } from "lucide-react";
+import { LayoutDashboard, Package, AlertTriangle, Store, Tag } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 type NavItem = {
@@ -14,7 +14,7 @@ type NavItem = {
 const items: NavItem[] = [
   { href: "/", label: "Dashboard", Icon: LayoutDashboard },
   { href: "/inventory", label: "Inventory", Icon: Package },
-  { href: "/alerts", label: "Alerts", Icon: Bell },
+  { href: "/alerts", label: "Alerts", Icon: AlertTriangle },
   { href: "/categories", label: "Categories", Icon: Tag },
 ];
 

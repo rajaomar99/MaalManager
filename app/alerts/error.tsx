@@ -2,7 +2,8 @@
 
 import { useEffect } from "react";
 import { Button, buttonVariants } from "@/components/ui/button";
-import { AlertTriangle } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
+import { BellOff, LayoutDashboard } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 
@@ -18,24 +19,32 @@ export default function Error({
   }, [error]);
 
   return (
-    <div className="flex min-h-[400px] flex-col items-center justify-center gap-4 px-4 text-center">
-      <div className="flex h-16 w-16 items-center justify-center rounded-full bg-destructive/10">
-        <AlertTriangle className="h-8 w-8 text-destructive" />
-      </div>
-      <div className="space-y-1">
-        <h2 className="text-lg font-semibold">Could not load alerts</h2>
-        <p className="text-sm text-muted-foreground">
-          There was a problem fetching low stock alerts. Please try again.
-        </p>
-      </div>
-      <div className="flex gap-3">
-        <Button onClick={reset} variant="outline" className="min-h-[44px]">
-          Try again
-        </Button>
-        <Link href="/" className={cn(buttonVariants({ variant: "ghost" }), "min-h-[44px]")}>
-          Go to Dashboard
-        </Link>
-      </div>
+    <div className="flex min-h-[60vh] items-center justify-center px-4">
+      <Card className="w-full max-w-md border-destructive/20">
+        <CardContent className="flex flex-col items-center gap-5 py-10 text-center">
+          <div className="flex h-20 w-20 items-center justify-center rounded-full bg-amber-100 dark:bg-amber-950/40">
+            <BellOff className="h-10 w-10 text-amber-600 dark:text-amber-400" />
+          </div>
+          <div className="space-y-2">
+            <h2 className="text-xl font-bold">Could not load alerts</h2>
+            <p className="text-base text-muted-foreground">
+              There was a problem fetching your low stock alerts. Please try again.
+            </p>
+          </div>
+          <div className="flex flex-col gap-3 sm:flex-row">
+            <Button onClick={reset} size="lg" className="min-w-[140px]">
+              Try again
+            </Button>
+            <Link
+              href="/"
+              className={cn(buttonVariants({ variant: "outline", size: "lg" }), "min-w-[140px] gap-2")}
+            >
+              <LayoutDashboard className="h-4 w-4" />
+              Dashboard
+            </Link>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }

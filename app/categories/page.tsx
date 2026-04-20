@@ -19,7 +19,7 @@ export default async function CategoriesPage() {
           <Tag className="h-6 w-6 text-primary" />
           <h2 className="text-2xl font-semibold tracking-tight">Categories</h2>
         </div>
-        <p className="text-sm text-muted-foreground">
+        <p className="text-base text-muted-foreground">
           Manage your {categories.length} product categories.
         </p>
       </div>
