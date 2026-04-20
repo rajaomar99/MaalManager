@@ -40,11 +40,11 @@ export function ShareButtons({ products }: ShareButtonsProps) {
 
   return (
     <div className="flex gap-2">
-      <Button variant="outline" size="sm" className="gap-2" onClick={handleDownload}>
+      <Button variant="outline" size="lg" className="gap-2" onClick={handleDownload}>
         <Download className="h-4 w-4" />
         Download
       </Button>
-      <Button variant="outline" size="sm" className="gap-2 text-emerald-700 border-emerald-300 hover:bg-emerald-50 dark:text-emerald-400 dark:border-emerald-800 dark:hover:bg-emerald-950/40" onClick={handleWhatsApp}>
+      <Button variant="outline" size="lg" className="gap-2 text-emerald-700 border-emerald-300 hover:bg-emerald-50 dark:text-emerald-400 dark:border-emerald-800 dark:hover:bg-emerald-950/40" onClick={handleWhatsApp}>
         <MessageCircle className="h-4 w-4" />
         Share on WhatsApp
       </Button>

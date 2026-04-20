@@ -68,14 +68,14 @@ export default async function AlertsPage() {
                   {/* Info */}
                   <div className="min-w-0 flex-1 space-y-2">
                     <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
-                      <span className="text-sm font-semibold">
+                      <span className="text-base font-semibold">
                         {p.name}
                       </span>
                       <StockBadge status={p.stockStatus} />
                     </div>
 
                     {/* Stats */}
-                    <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-xs sm:grid-cols-4">
+                    <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-sm sm:grid-cols-4">
                       <div>
                         <span className="text-muted-foreground">Stock:</span>{" "}
                         <span className="font-semibold text-destructive">

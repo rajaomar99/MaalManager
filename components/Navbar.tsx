@@ -32,8 +32,8 @@ export function Navbar({ alertCount = 0 }: { alertCount?: number }) {
         <div className="flex h-16 items-center gap-2 border-b px-5">
           <Store className="h-6 w-6 text-primary" aria-hidden />
           <div className="leading-tight">
-            <p className="text-sm font-semibold">Maal Manager</p>
-            <p className="text-xs text-muted-foreground">مال مینیجر</p>
+            <p className="font-semibold">Maal Manager</p>
+            <p className="text-muted-foreground">مال مینیجر</p>
           </div>
         </div>
         <nav className="flex-1 space-y-1 px-3 py-4">
@@ -52,7 +52,7 @@ export function Navbar({ alertCount = 0 }: { alertCount?: number }) {
                 )}
               >
                 <Icon className="h-5 w-5" aria-hidden />
-                <span className="flex-1">{label}</span>
+                <span className="flex-1 text-[15px]">{label}</span>
                 {showBadge && (
                   <span className="inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-destructive px-1.5 text-xs font-semibold text-white">
                     {alertCount}
@@ -62,7 +62,7 @@ export function Navbar({ alertCount = 0 }: { alertCount?: number }) {
             );
           })}
         </nav>
-        <div className="border-t px-5 py-3 text-xs text-muted-foreground">
+        <div className="border-t px-5 py-3 text-sm font-semibold text-muted-foreground">
           Al-Madina General Store
         </div>
       </aside>

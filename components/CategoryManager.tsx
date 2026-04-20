@@ -227,8 +227,8 @@ export function CategoryManager({ initialCategories }: CategoryManagerProps) {
                     {cat.icon}
                   </span>
                   <div className="min-w-0 flex-1">
-                    <p className="font-medium">{cat.name}</p>
-                    <p className="text-xs text-muted-foreground">
+                    <p className="text-base font-semibold">{cat.name}</p>
+                    <p className="text-sm text-muted-foreground">
                       {cat._count.products} product
                       {cat._count.products !== 1 ? "s" : ""}
                     </p>

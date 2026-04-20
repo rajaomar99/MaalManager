@@ -110,14 +110,14 @@ export function InventoryList({
       </div>
 
       {/* Status Filter Tabs */}
-      <div className="flex gap-1.5 overflow-x-auto pb-1">
+      <div className="flex gap-2 overflow-x-auto pb-1">
         {(["ALL", "OK", "LOW", "OUT"] as StatusFilter[]).map((s) => (
           <Button
             id={`filter-${s.toLowerCase()}`}
             key={s}
             variant={statusFilter === s ? "default" : "outline"}
             size="sm"
-            className="shrink-0 text-xs"
+            className="shrink-0 text-sm"
             onClick={() => setStatusFilter(s)}
           >
             {s === "ALL"
@@ -127,7 +127,7 @@ export function InventoryList({
                 : s === "LOW"
                   ? "Low Stock"
                   : "Out of Stock"}{" "}
-            <span className="ml-1 rounded-full bg-background/20 px-1.5 py-0.5 text-[10px] font-bold">
+            <span className="ml-1 rounded-full bg-background/20 px-1.5 py-0.5 text-xs font-bold">
               {counts[s]}
             </span>
           </Button>
@@ -158,27 +158,27 @@ export function InventoryList({
             >
               <div className="flex items-center gap-3 p-4">
                 {/* Category Icon */}
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-muted text-xl">
+                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-muted text-2xl">
                   {product.categoryIcon}
                 </div>
 
                 {/* Product Info */}
                 <div className="min-w-0 flex-1">
                   <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
-                    <span className="text-sm font-semibold">
+                    <span className="text-base font-semibold leading-snug">
                       {product.name}
                     </span>
                     <StockBadge status={product.stockStatus} />
                   </div>
-                  <div className="mt-0.5 flex flex-wrap gap-x-3 gap-y-0.5 text-xs text-muted-foreground">
+                  <div className="mt-1 flex flex-wrap gap-x-3 gap-y-0.5 text-sm text-muted-foreground">
                     <span>{product.categoryName}</span>
                     <span>
                       Min: {product.minStock} {product.unit}s
                     </span>
-                    <span>{formatPKR(product.sellingPrice)}</span>
+                    <span className="font-medium text-foreground/70">{formatPKR(product.sellingPrice)}</span>
                     {product.supplierName && (
                       <span className="hidden sm:inline">
-                        Order from: {product.supplierName}
+                        {product.supplierName}
                       </span>
                     )}
                   </div>
@@ -197,7 +197,7 @@ export function InventoryList({
                 {/* View Details */}
                 <Link
                   href={`/inventory/${productSlug(product.id, product.name)}`}
-                  className="ml-1 shrink-0 text-muted-foreground hover:text-primary"
+                  className="ml-1 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-border bg-muted/50 text-muted-foreground transition-colors hover:border-primary/40 hover:bg-primary/5 hover:text-primary"
                   title="View details"
                 >
                   <ChevronRight className="h-5 w-5" />
@@ -213,12 +213,13 @@ export function InventoryList({
         href="/inventory/new"
         className={cn(
           buttonVariants({ size: "lg" }),
-          "fixed bottom-20 right-4 z-20 flex h-14 w-14 items-center justify-center rounded-full shadow-lg md:hidden"
+          "fixed bottom-20 right-4 z-20 flex h-12 items-center gap-2 rounded-full px-5 shadow-lg md:hidden"
         )}
         id="add-product-fab"
         aria-label="Add product"
       >
-        <Plus className="h-6 w-6" />
+        <Plus className="h-5 w-5" />
+        <span className="text-sm font-semibold">Add Product</span>
       </Link>
     </div>
   );

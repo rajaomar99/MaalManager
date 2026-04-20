@@ -61,16 +61,16 @@ export default async function DashboardPage() {
     <div className="space-y-6">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="space-y-1">
-          <h2 className="text-2xl font-semibold tracking-tight">Dashboard</h2>
-          <p className="text-sm text-muted-foreground">
+          <h2 className="text-2xl font-bold tracking-tight md:text-3xl">Dashboard</h2>
+          <p className="text-base text-muted-foreground">
             Here&apos;s your store overview.
           </p>
         </div>
-        <div className="text-right">
-          <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+        <div className="rounded-xl border border-emerald-200 bg-emerald-50/60 px-4 py-2.5 text-right dark:border-emerald-900 dark:bg-emerald-950/30">
+          <p className="text-xs font-medium uppercase tracking-wider text-emerald-700 dark:text-emerald-500">
             Today&apos;s Revenue
           </p>
-          <p className="text-lg font-bold text-emerald-700 dark:text-emerald-400">
+          <p className="text-xl font-bold text-emerald-700 dark:text-emerald-400">
             {formatPKR(dailyRevenue)}
           </p>
         </div>
@@ -113,17 +113,17 @@ export default async function DashboardPage() {
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
               <div>
-                <CardTitle className="flex items-center gap-2 text-base">
+                <CardTitle className="flex items-center gap-2 text-lg font-semibold">
                   <TrendingDown className="h-4 w-4 text-destructive" />
                   Low Stock Items
                 </CardTitle>
-                <CardDescription>
+                <CardDescription className="text-base">
                   Top {lowStockProducts.length} items needing reorder
                 </CardDescription>
               </div>
               <Link
                 href="/alerts"
-                className="text-xs font-medium text-primary underline-offset-4 hover:underline"
+                className="text-sm font-semibold text-primary underline-offset-4 hover:underline"
               >
                 View all →
               </Link>
@@ -146,11 +146,11 @@ export default async function DashboardPage() {
                         <span className="text-base" aria-hidden>
                           {p.categoryIcon}
                         </span>
-                        <span className="truncate text-sm font-medium">
+                        <span className="truncate text-base font-semibold">
                           {p.name}
                         </span>
                       </div>
-                      <p className="mt-0.5 text-xs text-muted-foreground">
+                      <p className="mt-0.5 text-[15px] text-muted-foreground">
                         {p.currentStock}/{p.minStock} {p.unit}s · need{" "}
                         {p.reorderQty}
                       </p>
@@ -166,11 +166,11 @@ export default async function DashboardPage() {
         {/* Recent Movements */}
         <Card>
           <CardHeader className="pb-3">
-            <CardTitle className="flex items-center gap-2 text-base">
+            <CardTitle className="flex items-center gap-2 text-lg font-semibold">
               <RefreshCw className="h-4 w-4 text-primary" />
               Recent Activity
             </CardTitle>
-            <CardDescription>Last {recentMovements.length} stock movements</CardDescription>
+            <CardDescription className="text-base">Last {recentMovements.length} stock movements</CardDescription>
           </CardHeader>
           <CardContent className="space-y-0 p-0">
             {recentMovements.length === 0 ? (
@@ -186,16 +186,16 @@ export default async function DashboardPage() {
                   >
                     <MovementTypeIcon type={m.type} />
                     <div className="min-w-0 flex-1">
-                      <p className="truncate text-sm font-medium">
+                      <p className="truncate text-base font-semibold">
                         {m.product.name}
                       </p>
-                      <p className="text-xs text-muted-foreground">
+                      <p className="text-sm text-muted-foreground">
                         {m.note || m.type.toLowerCase()}
                       </p>
                     </div>
                     <div className="text-right">
                       <span
-                        className={`text-sm font-semibold tabular-nums ${
+                        className={`text-base font-semibold tabular-nums ${
                           m.quantity > 0
                             ? "text-emerald-600 dark:text-emerald-400"
                             : "text-red-600 dark:text-red-400"
@@ -204,7 +204,7 @@ export default async function DashboardPage() {
                         {m.quantity > 0 ? "+" : ""}
                         {m.quantity}
                       </span>
-                      <p className="text-[11px] text-muted-foreground">
+                      <p className="text-xs text-muted-foreground">
                         {formatRelativeTime(m.createdAt)}
                       </p>
                     </div>
