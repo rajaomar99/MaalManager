@@ -13,7 +13,7 @@ import { StockBadge } from "@/components/StockBadge";
 import { QuickStockUpdate } from "@/components/QuickStockUpdate";
 import { Card } from "@/components/ui/card";
 import { Button, buttonVariants } from "@/components/ui/button";
-import { Search, Plus, Package, ChevronRight } from "lucide-react";
+import { Search, Plus, Package, ExternalLink } from "lucide-react";
 import Link from "next/link";
 import { cn, productSlug } from "@/lib/utils";
 import { formatPKR } from "@/lib/format";
@@ -187,25 +187,41 @@ export function InventoryList({
                   </div>
                 </div>
 
-                {/* Bottom row on mobile (right-aligned): stock controls + arrow */}
-                <div className="flex items-center justify-end gap-2 sm:justify-normal">
-                  <QuickStockUpdate
-                    productId={product.id}
-                    currentStock={product.currentStock}
-                    unit={product.unit}
-                    onUpdate={(newStock, newStatus) =>
-                      handleStockUpdate(product.id, newStock, newStatus)
-                    }
-                  />
-
-                  {/* View Details */}
+                {/* Bottom row on mobile: stock controls + View Product button */}
+                <div className="flex items-center justify-between gap-2 sm:justify-normal">
                   <Link
                     href={`/inventory/${productSlug(product.id, product.name)}`}
-                    className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-border bg-muted/50 text-muted-foreground transition-colors hover:border-primary/40 hover:bg-primary/5 hover:text-primary"
-                    title="View details"
+                    className={cn(
+                      buttonVariants({ size: "sm" }),
+                      "shrink-0 gap-1.5 sm:hidden py-4"
+                    )}
                   >
-                    <ChevronRight className="h-5 w-5" />
+                    <ExternalLink className="h-3.5 w-3.5" />
+                    View Product
                   </Link>
+
+                  <div className="flex items-center gap-2">
+                    <QuickStockUpdate
+                      productId={product.id}
+                      currentStock={product.currentStock}
+                      unit={product.unit}
+                      onUpdate={(newStock, newStatus) =>
+                        handleStockUpdate(product.id, newStock, newStatus)
+                      }
+                    />
+
+                    {/* Desktop: View Product button */}
+                    <Link
+                      href={`/inventory/${productSlug(product.id, product.name)}`}
+                      className={cn(
+                        buttonVariants({ size: "sm" }),
+                        "hidden shrink-0 gap-1.5 sm:flex py-5"
+                      )}
+                    >
+                      <ExternalLink className="h-3.5 w-3.5" />
+                      View Product
+                    </Link>
+                  </div>
                 </div>
               </div>
             </Card>
