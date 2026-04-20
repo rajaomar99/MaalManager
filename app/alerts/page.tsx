@@ -1,45 +1,19 @@
+import type { Metadata } from "next";
 import { connection } from "next/server";
-import { prisma } from "@/lib/prisma";
+
+export const metadata: Metadata = {
+  title: "Low Stock Alerts | Maal Manager",
+};
 import { Card, CardContent } from "@/components/ui/card";
 import { StockBadge } from "@/components/StockBadge";
 import { RestockDialog } from "@/components/RestockDialog";
-import { formatPKR } from "@/lib/format";
 import {
   AlertTriangle,
   Package,
   Truck,
   ArrowDown,
 } from "lucide-react";
-
-async function getLowStockProducts() {
-  const products = await prisma.product.findMany({
-    include: { category: true },
-    orderBy: { currentStock: "asc" },
-  });
-
-  return products
-    .filter((p) => p.currentStock <= p.minStock)
-    .sort(
-      (a, b) =>
-        a.currentStock - a.minStock - (b.currentStock - b.minStock)
-    )
-    .map((p) => ({
-      id: p.id,
-      name: p.name,
-      currentStock: p.currentStock,
-      minStock: p.minStock,
-      reorderQty: p.reorderQty,
-      unit: p.unit,
-      purchasePrice: Number(p.purchasePrice),
-      sellingPrice: Number(p.sellingPrice),
-      supplierName: p.supplierName,
-      categoryIcon: p.category.icon,
-      categoryName: p.category.name,
-      stockStatus:
-        p.currentStock === 0 ? ("OUT" as const) : ("LOW" as const),
-      unitsShort: p.minStock - p.currentStock,
-    }));
-}
+import { getLowStockProducts } from "@/actions/products.action";
 
 export default async function AlertsPage() {
   await connection();
@@ -89,8 +63,8 @@ export default async function AlertsPage() {
 
                   {/* Info */}
                   <div className="min-w-0 flex-1 space-y-2">
-                    <div className="flex items-center gap-2">
-                      <span className="truncate text-sm font-semibold">
+                    <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
+                      <span className="text-sm font-semibold">
                         {p.name}
                       </span>
                       <StockBadge status={p.stockStatus} />

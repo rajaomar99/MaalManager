@@ -15,7 +15,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Loader2, PackagePlus } from "lucide-react";
 import { toast } from "sonner";
-import { updateStock } from "@/actions/stock";
+import { updateStock } from "@/actions/products.action";
 
 interface RestockDialogProps {
   productId: number;
@@ -63,7 +63,7 @@ export function RestockDialog({
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger
         render={
-          <Button size="sm" id={`restock-btn-${productId}`} />
+          <Button size="sm" className="min-h-[44px]" id={`restock-btn-${productId}`} />
         }
       >
         <PackagePlus className="mr-2 h-4 w-4" />

@@ -4,8 +4,8 @@ import { Toaster } from "@/components/ui/sonner";
 import { Navbar } from "@/components/Navbar";
 import { StoreHeader } from "@/components/StoreHeader";
 import { AlertBanner } from "@/components/AlertBanner";
-import { prisma } from "@/lib/prisma";
 import "./globals.css";
+import { getLowStockCount } from "@/actions/products.action";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -28,16 +28,14 @@ export const metadata: Metadata = {
   description:
     "Inventory management and reorder alerts for Al-Madina General Store, Gulberg Lahore.",
   icons: {
-    icon: "/favicon.ico",
+    icon: [
+      {
+        url: "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏪</text></svg>",
+        type: "image/svg+xml",
+      },
+    ],
   },
 };
-
-async function getLowStockCount() {
-  const products = await prisma.product.findMany({
-    select: { currentStock: true, minStock: true },
-  });
-  return products.filter((p) => p.currentStock <= p.minStock).length;
-}
 
 export default async function RootLayout({
   children,
@@ -51,7 +49,7 @@ export default async function RootLayout({
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} ${notoUrdu.variable} h-full antialiased`}
     >
-      <body className="min-h-full bg-background text-foreground">
+      <body className="min-h-full bg-background text-foreground text-[15px] md:text-[16.5px]">
         <Navbar alertCount={alertCount} />
         <div className="min-h-screen md:pl-60">
           <StoreHeader />

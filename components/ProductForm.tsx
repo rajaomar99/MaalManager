@@ -15,7 +15,8 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Loader2, Save } from "lucide-react";
 import { toast } from "sonner";
-import { createProduct, updateProduct } from "@/actions/products";
+import { createProduct, updateProduct } from "@/actions/products.action";
+import { productSlug } from "@/lib/utils";
 import type { Category } from "@/lib/types";
 
 const UNITS = ["packet", "bottle", "piece", "bag", "pack", "jar", "kg", "litre", "dozen"];
@@ -109,7 +110,7 @@ export function ProductForm({ categories, product }: ProductFormProps) {
       }
 
       toast.success(isEdit ? "Product updated!" : "Product added!");
-      router.push(isEdit ? `/inventory/${result.id}` : "/inventory");
+      router.push(isEdit ? `/inventory/${productSlug(result.id, name.trim())}` : "/inventory");
     });
   }
 
@@ -141,7 +142,14 @@ export function ProductForm({ categories, product }: ProductFormProps) {
                 onValueChange={(v) => setCategoryId(v ?? "")}
               >
                 <SelectTrigger id="category-select">
-                  <SelectValue placeholder="Select category" />
+                  {categoryId ? (
+                    <span>
+                      {categories.find((c) => c.id.toString() === categoryId)?.icon}{" "}
+                      {categories.find((c) => c.id.toString() === categoryId)?.name ?? "Select category"}
+                    </span>
+                  ) : (
+                    <SelectValue placeholder="Select category" />
+                  )}
                 </SelectTrigger>
                 <SelectContent>
                   {categories.map((c) => (

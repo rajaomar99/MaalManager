@@ -1,5 +1,9 @@
+import type { Metadata } from "next";
 import { connection } from "next/server";
-import { prisma } from "@/lib/prisma";
+
+export const metadata: Metadata = {
+  title: "Product Detail | Maal Manager",
+};
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, Edit, Truck } from "lucide-react";
@@ -17,25 +21,11 @@ import { QuickStockUpdate } from "@/components/QuickStockUpdate";
 import { DeleteProductDialog } from "@/components/DeleteProductDialog";
 import { ProductForm } from "@/components/ProductForm";
 import { formatPKR } from "@/lib/format";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-
-async function getProduct(id: number) {
-  return prisma.product.findUnique({
-    where: { id },
-    include: {
-      category: true,
-      movements: { orderBy: { createdAt: "desc" }, take: 50 },
-    },
-  });
-}
-
-async function getCategories() {
-  return prisma.category.findMany({
-    orderBy: { name: "asc" },
-    include: { _count: { select: { products: true } } },
-  });
-}
+import { getCategories } from "@/actions/category.action";
+import { getProduct } from "@/actions/products.action";
+import { parseProductId, productSlug } from "@/lib/utils";
 
 export default async function ProductDetailPage({
   params,
@@ -48,8 +38,8 @@ export default async function ProductDetailPage({
 
   const { id } = await params;
   const { edit } = await searchParams;
-  const productId = Number(id);
-  if (Number.isNaN(productId)) notFound();
+  const productId = parseProductId(id);
+  if (Number.isNaN(productId) || productId <= 0) notFound();
 
   const product = await getProduct(productId);
   if (!product) notFound();
@@ -68,8 +58,8 @@ export default async function ProductDetailPage({
       <div className="space-y-4">
         <div className="flex items-center gap-3">
           <Link
-            href={`/inventory/${productId}`}
-            className="inline-flex h-8 w-8 items-center justify-center rounded-md border bg-background text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+            href={`/inventory/${productSlug(productId, product.name)}`}
+            className="inline-flex h-11 w-11 items-center justify-center rounded-md border bg-background text-muted-foreground hover:bg-accent hover:text-accent-foreground"
           >
             <ArrowLeft className="h-4 w-4" />
           </Link>
@@ -103,25 +93,25 @@ export default async function ProductDetailPage({
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-start justify-between gap-4">
+      <div className="space-y-3">
         <div className="flex items-center gap-3">
           <Link
             href="/inventory"
-            className="inline-flex h-8 w-8 items-center justify-center rounded-md border bg-background text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+            className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-md border bg-background text-muted-foreground hover:bg-accent hover:text-accent-foreground"
           >
             <ArrowLeft className="h-4 w-4" />
           </Link>
-          <div>
-            <div className="flex items-center gap-2">
+          <div className="min-w-0 flex-1">
+            <div className="flex flex-wrap items-center gap-2">
               <span className="text-2xl" aria-hidden>
                 {product.category.icon}
               </span>
-              <h2 className="text-2xl font-semibold tracking-tight">
+              <h2 className="text-xl font-semibold tracking-tight sm:text-2xl">
                 {product.name}
               </h2>
               <StockBadge status={stockStatus} />
             </div>
-            <p className="mt-0.5 text-sm text-muted-foreground">
+            <p className="mt-0.5 truncate text-sm text-muted-foreground">
               {product.category.name}
               {product.supplierName && (
                 <>
@@ -132,20 +122,20 @@ export default async function ProductDetailPage({
               )}
             </p>
           </div>
-        </div>
-        <div className="flex shrink-0 gap-2">
-          <Link
-            href={`/inventory/${productId}?edit=true`}
-            className={cn(buttonVariants({ variant: "outline", size: "sm" }))}
-            id="edit-product-btn"
-          >
-            <Edit className="mr-2 h-4 w-4" />
-            Edit
-          </Link>
-          <DeleteProductDialog
-            productId={productId}
-            productName={product.name}
-          />
+          <div className="flex shrink-0 gap-2">
+            <Link
+              href={`/inventory/${productSlug(productId, product.name)}?edit=true`}
+              className={cn(buttonVariants({ variant: "outline", size: "sm" }), "min-h-[44px]")}
+              id="edit-product-btn"
+            >
+              <Edit className="mr-2 h-4 w-4" />
+              Edit
+            </Link>
+            <DeleteProductDialog
+              productId={productId}
+              productName={product.name}
+            />
+          </div>
         </div>
       </div>
 

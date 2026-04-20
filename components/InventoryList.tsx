@@ -13,9 +13,9 @@ import { StockBadge } from "@/components/StockBadge";
 import { QuickStockUpdate } from "@/components/QuickStockUpdate";
 import { Card } from "@/components/ui/card";
 import { Button, buttonVariants } from "@/components/ui/button";
-import { Search, Plus, Package } from "lucide-react";
+import { Search, Plus, Package, ChevronRight } from "lucide-react";
 import Link from "next/link";
-import { cn } from "@/lib/utils";
+import { cn, productSlug } from "@/lib/utils";
 import { formatPKR } from "@/lib/format";
 import type { ProductWithStatus, Category } from "@/lib/types";
 
@@ -99,6 +99,14 @@ export function InventoryList({
             ))}
           </SelectContent>
         </Select>
+        <Link
+          href="/inventory/new"
+          className={cn(buttonVariants(), "hidden shrink-0 gap-2 md:flex")}
+          id="add-product-btn"
+        >
+          <Plus className="h-4 w-4" />
+          Add Product
+        </Link>
       </div>
 
       {/* Status Filter Tabs */}
@@ -156,13 +164,10 @@ export function InventoryList({
 
                 {/* Product Info */}
                 <div className="min-w-0 flex-1">
-                  <div className="flex items-center gap-2">
-                    <Link
-                      href={`/inventory/${product.id}`}
-                      className="truncate text-sm font-semibold hover:text-primary hover:underline"
-                    >
+                  <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
+                    <span className="text-sm font-semibold">
                       {product.name}
-                    </Link>
+                    </span>
                     <StockBadge status={product.stockStatus} />
                   </div>
                   <div className="mt-0.5 flex flex-wrap gap-x-3 gap-y-0.5 text-xs text-muted-foreground">
@@ -183,23 +188,32 @@ export function InventoryList({
                     handleStockUpdate(product.id, newStock, newStatus)
                   }
                 />
+
+                {/* View Details */}
+                <Link
+                  href={`/inventory/${productSlug(product.id, product.name)}`}
+                  className="ml-1 shrink-0 text-muted-foreground hover:text-primary"
+                  title="View details"
+                >
+                  <ChevronRight className="h-5 w-5" />
+                </Link>
               </div>
             </Card>
           ))}
         </div>
       )}
 
-      {/* Floating Add Button */}
+      {/* Mobile FAB */}
       <Link
         href="/inventory/new"
         className={cn(
           buttonVariants({ size: "lg" }),
-          "fixed bottom-20 right-4 z-20 h-14 w-14 rounded-full shadow-lg md:bottom-6 md:right-6 md:h-auto md:w-auto md:rounded-lg md:px-6"
+          "fixed bottom-20 right-4 z-20 flex h-14 w-14 items-center justify-center rounded-full shadow-lg md:hidden"
         )}
-        id="add-product-btn"
+        id="add-product-fab"
+        aria-label="Add product"
       >
-        <Plus className="h-6 w-6 md:mr-2 md:h-4 md:w-4" />
-        <span className="hidden md:inline">Add Product</span>
+        <Plus className="h-6 w-6" />
       </Link>
     </div>
   );

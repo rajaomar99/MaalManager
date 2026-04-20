@@ -4,7 +4,7 @@ import { useState, useTransition } from "react";
 import { Button } from "@/components/ui/button";
 import { Minus, Plus, Loader2 } from "lucide-react";
 import { toast } from "sonner";
-import { updateStock } from "@/actions/stock";
+import { updateStock } from "@/actions/products.action";
 
 interface QuickStockUpdateProps {
   productId: number;
@@ -57,15 +57,15 @@ export function QuickStockUpdate({
         id={`stock-minus-${productId}`}
         variant="outline"
         size="icon"
-        className="h-8 w-8 shrink-0"
+        className="h-11 w-11 shrink-0"
         onClick={() => handleDelta(-1)}
         disabled={isPending || stock <= 0}
         aria-label={`Remove 1 ${unit}`}
       >
         {isPending ? (
-          <Loader2 className="h-3.5 w-3.5 animate-spin" />
+          <Loader2 className="h-4 w-4 animate-spin" />
         ) : (
-          <Minus className="h-3.5 w-3.5" />
+          <Minus className="h-4 w-4" />
         )}
       </Button>
       <span className="min-w-10 text-center text-sm font-semibold tabular-nums">
@@ -75,15 +75,15 @@ export function QuickStockUpdate({
         id={`stock-plus-${productId}`}
         variant="outline"
         size="icon"
-        className="h-8 w-8 shrink-0"
+        className="h-11 w-11 shrink-0"
         onClick={() => handleDelta(1)}
         disabled={isPending}
         aria-label={`Add 1 ${unit}`}
       >
         {isPending ? (
-          <Loader2 className="h-3.5 w-3.5 animate-spin" />
+          <Loader2 className="h-4 w-4 animate-spin" />
         ) : (
-          <Plus className="h-3.5 w-3.5" />
+          <Plus className="h-4 w-4" />
         )}
       </Button>
     </div>

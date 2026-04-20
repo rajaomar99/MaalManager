@@ -8,7 +8,7 @@ Inventory management + reorder alerts for Pakistani kiryana stores.
 ## App Concept
 
 **Name:** Maal Manager (مال مینیجر)  
-**Store:** Al-Madina General Store — Ahmed Bhai, Gulberg Lahore  
+**Store:** Al-Madina General Store — Saleem Khan, Gulberg Lahore  
 **Problem:** Kiryana store owners run out of fast-moving items because they track inventory manually in notebooks or in their heads. No visibility into what needs reordering until it's already out of stock.  
 **Solution:** A simple web app where store owners can see live stock levels, get reorder alerts, and update inventory with one tap.
 
@@ -91,7 +91,7 @@ model StockMovement {
 
 ## Seed Data — Realistic Pakistani Products
 
-Seed as: **Ahmed Bhai, Al-Madina General Store, Gulberg Lahore**
+Seed as: **Saleem Khan, Al-Madina General Store, Gulberg Lahore**
 
 Mix of low-stock and OK items so alerts are visible immediately on first load.
 
@@ -357,8 +357,7 @@ ADJUSTMENT], quantity, note?, createdAt).
 SEED DATA:
 Pre-populate with 15 real Pakistani products (Tapal Danedar 200g, Pepsi 1.5L,
 Shan Biryani Masala, Sunridge Flour 5kg, Lays Classic, Olpers Milk 1L, Surf
-Excel 500g, Dalda Cooking Oil 1L etc.) for "Al-Madina General Store, Ahmed
-Bhai, Gulberg Lahore". Mix of low-stock and OK items so alerts show immediately.
+Excel 500g, Dalda Cooking Oil 1L etc.) for "Al-Madina General Store, Saleem Khan, Gulberg Lahore". Mix of low-stock and OK items so alerts show immediately.
 
 PAGES:
 / — Dashboard with 4 stat cards (total products, low stock count, out of stock

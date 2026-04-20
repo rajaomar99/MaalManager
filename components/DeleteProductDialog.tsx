@@ -14,7 +14,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Loader2, Trash2 } from "lucide-react";
 import { toast } from "sonner";
-import { deleteProduct } from "@/actions/products";
+import { deleteProduct } from "@/actions/products.action";
 
 interface DeleteProductDialogProps {
   productId: number;
@@ -48,7 +48,7 @@ export function DeleteProductDialog({
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger
         render={
-          <Button variant="outline" className="text-destructive" id="delete-product-btn" />
+          <Button variant="outline" className="min-h-[44px] text-destructive" id="delete-product-btn" />
         }
       >
         <Trash2 className="mr-2 h-4 w-4" />

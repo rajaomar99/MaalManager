@@ -1,6 +1,4 @@
-import { Suspense } from "react";
 import { connection } from "next/server";
-import { prisma } from "@/lib/prisma";
 import { formatPKR } from "@/lib/format";
 import { StatsCard } from "@/components/StatsCard";
 import { StockBadge } from "@/components/StockBadge";
@@ -16,62 +14,8 @@ import {
   TrendingDown,
 } from "lucide-react";
 import Link from "next/link";
-
-async function getStats() {
-  const products = await prisma.product.findMany({
-    select: {
-      currentStock: true,
-      minStock: true,
-      sellingPrice: true,
-    },
-  });
-
-  return {
-    totalProducts: products.length,
-    lowStockCount: products.filter(
-      (p) => p.currentStock > 0 && p.currentStock <= p.minStock
-    ).length,
-    outOfStockCount: products.filter((p) => p.currentStock === 0).length,
-    totalInventoryValue: products.reduce(
-      (acc, p) => acc + p.currentStock * Number(p.sellingPrice),
-      0
-    ),
-  };
-}
-
-async function getLowStockProducts() {
-  const products = await prisma.product.findMany({
-    include: { category: true },
-    orderBy: { currentStock: "asc" },
-  });
-
-  return products
-    .filter((p) => p.currentStock <= p.minStock)
-    .sort((a, b) => (a.currentStock - a.minStock) - (b.currentStock - b.minStock))
-    .slice(0, 5)
-    .map((p) => ({
-      id: p.id,
-      name: p.name,
-      currentStock: p.currentStock,
-      minStock: p.minStock,
-      unit: p.unit,
-      reorderQty: p.reorderQty,
-      categoryIcon: p.category.icon,
-      categoryName: p.category.name,
-      stockStatus: p.currentStock === 0 ? ("OUT" as const) : ("LOW" as const),
-      unitsShort: p.minStock - p.currentStock,
-    }));
-}
-
-async function getRecentMovements() {
-  return prisma.stockMovement.findMany({
-    take: 10,
-    orderBy: { createdAt: "desc" },
-    include: {
-      product: { select: { id: true, name: true } },
-    },
-  });
-}
+import { getFiveLowStockProducts, getStats } from "@/actions/products.action";
+import { getRecentMovements } from "@/actions/stockmovement.action";
 
 function MovementTypeIcon({ type }: { type: string }) {
   switch (type) {
@@ -108,7 +52,7 @@ export default async function DashboardPage() {
 
   const [stats, lowStockProducts, recentMovements] = await Promise.all([
     getStats(),
-    getLowStockProducts(),
+    getFiveLowStockProducts(),
     getRecentMovements(),
   ]);
 
@@ -117,7 +61,7 @@ export default async function DashboardPage() {
       <div className="space-y-1">
         <h2 className="text-2xl font-semibold tracking-tight">Dashboard</h2>
         <p className="text-sm text-muted-foreground">
-          Welcome back, Ahmed Bhai. Here&apos;s your store overview.
+          Welcome back, Saleem Khan. Here&apos;s your store overview.
         </p>
       </div>
 
