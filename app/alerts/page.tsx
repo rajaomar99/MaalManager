@@ -7,7 +7,7 @@ export const metadata: Metadata = {
 import { Card, CardContent } from "@/components/ui/card";
 import { StockBadge } from "@/components/StockBadge";
 import { RestockDialog } from "@/components/RestockDialog";
-import { PrintButton } from "@/components/PrintButton";
+import { ShareButtons } from "@/components/PrintButton";
 import {
   AlertTriangle,
   Package,
@@ -36,7 +36,7 @@ export default async function AlertsPage() {
               : `${lowStockProducts.length} item${lowStockProducts.length !== 1 ? "s" : ""} need restocking — sorted by most critical first.`}
           </p>
         </div>
-        {lowStockProducts.length > 0 && <PrintButton />}
+        {lowStockProducts.length > 0 && <ShareButtons products={lowStockProducts} />}
       </div>
 
       {lowStockProducts.length === 0 ? (
