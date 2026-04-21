@@ -33,7 +33,7 @@ export default async function AlertsPage() {
           <p className="text-base text-muted-foreground">
             {lowStockProducts.length === 0
               ? "All items are well-stocked. 🎉"
-              : `${lowStockProducts.length} item${lowStockProducts.length !== 1 ? "s" : ""} need restocking — sorted by most critical first.`}
+              : `${lowStockProducts.length} item${lowStockProducts.length !== 1 ? "s" : ""} need restocking - sorted by most critical first.`}
           </p>
         </div>
         {lowStockProducts.length > 0 && <ShareButtons products={lowStockProducts} />}
@@ -95,12 +95,14 @@ export default async function AlertsPage() {
                           /{p.minStock} {p.unit}s
                         </span>
                       </div>
-                      <div className="flex items-center gap-1">
-                        <ArrowDown className="h-3 w-3 text-destructive" />
-                        <span className="font-semibold text-destructive">
-                          {p.unitsShort} short
-                        </span>
-                      </div>
+                      {p.unitsShort > 0 && (
+                        <div className="flex items-center gap-1">
+                          <ArrowDown className="h-3 w-3 text-destructive" />
+                          <span className="font-semibold text-destructive">
+                            {p.unitsShort} short
+                          </span>
+                        </div>
+                      )}
                       <div>
                         <span className="text-muted-foreground">Reorder: </span>
                         <span className="font-medium">
@@ -119,7 +121,7 @@ export default async function AlertsPage() {
                 </div>
 
                 {/* Mobile-only restock button: full width below */}
-                <div className="mt-3 sm:hidden [&>*]:w-full">
+                <div className="mt-3 sm:hidden `*:w-full`">
                   <RestockDialog
                     productId={p.id}
                     productName={p.name}

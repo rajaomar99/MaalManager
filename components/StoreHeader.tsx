@@ -7,7 +7,7 @@ export function StoreHeader() {
         <div className="flex items-center gap-2.5">
           <Store className="h-6 w-6 shrink-0 text-primary md:hidden" />
           <div className="leading-tight">
-            <h1 className="text-lg font-bold tracking-tight md:text-xl">
+            <h1 className="text-[17px] font-bold tracking-tight md:text-lg lg:text-xl">
               Al-Madina General Store
             </h1>
             <p className="text-[15px] text-muted-foreground">
@@ -15,6 +15,9 @@ export function StoreHeader() {
             </p>
           </div>
         </div>
+        <p className="text-[17px] md:text-xl lg:text-2xl font-semibold text-emerald-600 dark:text-emerald-400" dir="rtl">
+           خوش آمدید سلیم خان
+        </p>
       </div>
     </header>
   );
