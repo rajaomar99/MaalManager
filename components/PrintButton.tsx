@@ -3,15 +3,17 @@
 import { Button } from "@/components/ui/button";
 import { Download, MessageCircle } from "lucide-react";
 
+interface Product {
+  name: string;
+  currentStock: number;
+  minStock: number;
+  unit: string;
+  reorderQty: number;
+  supplierName?: string | null;
+}
+
 interface ShareButtonsProps {
-  products: {
-    name: string;
-    currentStock: number;
-    minStock: number;
-    unit: string;
-    reorderQty: number;
-    supplierName?: string | null;
-  }[];
+  products: Product[];
 }
 
 function getDate() {
@@ -19,6 +21,21 @@ function getDate() {
     day: "numeric",
     month: "long",
     year: "numeric",
+  });
+}
+
+function groupBySupplier(products: Product[]) {
+  const map = new Map<string, Product[]>();
+  for (const p of products) {
+    const key = p.supplierName ?? "General / Wholesale Market";
+    if (!map.has(key)) map.set(key, []);
+    map.get(key)!.push(p);
+  }
+  // Named suppliers alphabetically, "No Supplier Assigned" last
+  return [...map.entries()].sort(([a], [b]) => {
+    if (a === "General / Wholesale Market") return 1;
+    if (b === "General / Wholesale Market") return -1;
+    return a.localeCompare(b);
   });
 }
 
@@ -30,9 +47,9 @@ export function ShareButtons({ products }: ShareButtonsProps) {
     const date = getDate();
     const pageW = doc.internal.pageSize.getWidth();
     const margin = 18;
-    // A4 usable width = 210 - 18*2 = 174mm; columns sum to 174
-    const colWidths = [8, 52, 32, 30, 26, 26];
-    const headers = ["#", "Product", "Stock / Min", "Shortage", "Reorder", "Supplier"];
+    // Columns: #, Product, Stock/Min, Shortage, Reorder  (no supplier col — it's the group header now)
+    const colWidths = [8, 64, 36, 36, 30];
+    const headers = ["#", "Product", "Stock / Min", "Shortage", "Reorder"];
     const rowH = 8;
     let y = margin;
 
@@ -46,61 +63,78 @@ export function ShareButtons({ products }: ShareButtonsProps) {
     doc.setFont("helvetica", "normal");
     doc.setFontSize(10);
     doc.setTextColor(100);
-    doc.text(`Date: ${date}   |   ${products.length} item${products.length !== 1 ? "s" : ""} need restocking`, margin, y);
-    y += 8;
+    doc.text(
+      `Date: ${date}   |   ${products.length} item${products.length !== 1 ? "s" : ""} need restocking`,
+      margin,
+      y
+    );
+    y += 10;
     doc.setTextColor(0);
 
-    // Table header
-    doc.setFillColor(26, 26, 26);
-    doc.setTextColor(255);
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(9.5);
-    doc.rect(margin, y, pageW - margin * 2, rowH, "F");
-    let x = margin;
-    headers.forEach((h, i) => {
-      doc.text(h, x + 2, y + 5.5);
-      x += colWidths[i];
-    });
-    y += rowH;
+    const groups = groupBySupplier(products);
+    let globalIdx = 1;
 
-    // Rows
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(9.5);
-    products.forEach((p, idx) => {
-      const short = p.minStock - p.currentStock;
-      const shortage = short > 0 ? `${short} ${p.unit}s short` : "At threshold";
-      const cells = [
-        `${idx + 1}`,
-        p.name,
-        `${p.currentStock} / ${p.minStock} ${p.unit}s`,
-        shortage,
-        `${p.reorderQty} ${p.unit}s`,
-        p.supplierName ?? "—",
-      ];
+    for (const [supplier, items] of groups) {
+      // Supplier section header
+      doc.setFillColor(245, 158, 11); // amber-500
+      doc.rect(margin, y, pageW - margin * 2, 7, "F");
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(9.5);
+      doc.setTextColor(255, 255, 255);
+      doc.text(`${supplier}  (${items.length} item${items.length !== 1 ? "s" : ""})`, margin + 3, y + 4.8);
+      y += 7;
 
-      // Alternating row background
-      if (idx % 2 === 1) {
-        doc.setFillColor(249, 250, 251);
-        doc.rect(margin, y, pageW - margin * 2, rowH, "F");
-      }
-
-      doc.setTextColor(0);
-      x = margin;
-      cells.forEach((cell, i) => {
-        const maxW = colWidths[i] - 4;
-        const text = doc.splitTextToSize(cell, maxW)[0] ?? cell;
-        doc.text(text, x + 2, y + 5.5);
+      // Table header
+      doc.setFillColor(26, 26, 26);
+      doc.setTextColor(255, 255, 255);
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(9);
+      doc.rect(margin, y, pageW - margin * 2, rowH, "F");
+      let x = margin;
+      headers.forEach((h, i) => {
+        doc.text(h, x + 2, y + 5.5);
         x += colWidths[i];
       });
-
-      // Row border
-      doc.setDrawColor(229, 231, 235);
-      doc.line(margin, y + rowH, margin + (pageW - margin * 2), y + rowH);
       y += rowH;
-    });
+
+      // Rows
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(9.5);
+      items.forEach((p, idx) => {
+        const short = p.minStock - p.currentStock;
+        const shortage = short > 0 ? `${short} ${p.unit}s short` : "At threshold";
+        const cells = [
+          `${globalIdx++}`,
+          p.name,
+          `${p.currentStock} / ${p.minStock} ${p.unit}s`,
+          shortage,
+          `${p.reorderQty} ${p.unit}s`,
+        ];
+
+        if (idx % 2 === 1) {
+          doc.setFillColor(249, 250, 251);
+          doc.rect(margin, y, pageW - margin * 2, rowH, "F");
+        }
+
+        doc.setTextColor(0);
+        x = margin;
+        cells.forEach((cell, i) => {
+          const maxW = colWidths[i] - 4;
+          const text = doc.splitTextToSize(cell, maxW)[0] ?? cell;
+          doc.text(text, x + 2, y + 5.5);
+          x += colWidths[i];
+        });
+
+        doc.setDrawColor(229, 231, 235);
+        doc.line(margin, y + rowH, margin + (pageW - margin * 2), y + rowH);
+        y += rowH;
+      });
+
+      y += 5; // gap between groups
+    }
 
     // Footer
-    y += 8;
+    y += 4;
     doc.setFontSize(8.5);
     doc.setTextColor(150);
     doc.text(`Generated by Maal Manager  •  Gulberg, Lahore`, margin, y);
@@ -110,11 +144,16 @@ export function ShareButtons({ products }: ShareButtonsProps) {
 
   function handleWhatsApp() {
     const date = getDate();
-    const lines = products.map((p, i) => {
-      const short = p.minStock - p.currentStock;
-      const shortage = short > 0 ? `${short} ${p.unit}s short` : "At threshold";
-      const supplier = p.supplierName ? `\n   Supplier: ${p.supplierName}` : "";
-      return `${i + 1}. *${p.name}*\n   Stock: ${p.currentStock}/${p.minStock} ${p.unit}s\n   Shortage: ${shortage}\n   Reorder: ${p.reorderQty} ${p.unit}s${supplier}`;
+    const groups = groupBySupplier(products);
+
+    let globalIdx = 1;
+    const sections = groups.map(([supplier, items]) => {
+      const lines = items.map((p) => {
+        const short = p.minStock - p.currentStock;
+        const shortage = short > 0 ? `${short} ${p.unit}s short` : "At threshold";
+        return `${globalIdx++}. *${p.name}*\n   Stock: ${p.currentStock}/${p.minStock} ${p.unit}s\n   Shortage: ${shortage}\n   Reorder: ${p.reorderQty} ${p.unit}s`;
+      });
+      return `- *${supplier}*\n\n` + lines.join("\n\n");
     });
 
     const message =
@@ -122,7 +161,7 @@ export function ShareButtons({ products }: ShareButtonsProps) {
       `${date}\n` +
       `${products.length} item${products.length !== 1 ? "s" : ""} need restocking\n\n` +
       `─────────────────────\n\n` +
-      lines.join("\n\n") +
+      sections.join("\n\n─────────────────────\n\n") +
       `\n\n─────────────────────\n` +
       `_Generated by Maal Manager • Gulberg, Lahore_`;
 

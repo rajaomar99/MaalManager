@@ -130,8 +130,8 @@ export function CategoryManager({ initialCategories }: CategoryManagerProps) {
         <CardContent>
           <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
             <div className="space-y-1.5">
-              <Label htmlFor="new-icon">
-                Emoji Icon{" "}
+              <Label htmlFor="new-icon" className="text-base">
+                Emoji Icon
                 <span className="text-muted-foreground">(optional)</span>
               </Label>
               <Input
@@ -144,7 +144,7 @@ export function CategoryManager({ initialCategories }: CategoryManagerProps) {
               />
             </div>
             <div className="flex-1 space-y-1.5">
-              <Label htmlFor="new-name">Category Name *</Label>
+              <Label htmlFor="new-name" className="text-base">Category Name *</Label>
               <Input
                 id="new-name"
                 placeholder="e.g. Tea & Coffee"

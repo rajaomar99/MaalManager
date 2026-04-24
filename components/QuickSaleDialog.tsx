@@ -73,7 +73,7 @@ export function QuickSaleDialog({
         render={
           <Button
             variant="outline"
-            size="sm"
+            size="lg"
             className="min-h-[44px] gap-2"
             id={`sale-btn-${productId}`}
             disabled={currentStock === 0}
@@ -85,7 +85,7 @@ export function QuickSaleDialog({
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Record Sale — {productName}</DialogTitle>
+          <DialogTitle>Record Sale - {productName}</DialogTitle>
           <DialogDescription>
             Current stock: {currentStock} {unit}s. Enter how many were sold.
           </DialogDescription>

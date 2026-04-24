@@ -7,7 +7,7 @@ import {
   Package,
   AlertTriangle,
   PackageX,
-  IndianRupee,
+  Wallet,
   ArrowDownCircle,
   ArrowUpCircle,
   RefreshCw,
@@ -105,7 +105,7 @@ export default async function DashboardPage() {
         <StatsCard
           title="Inventory Value"
           value={formatPKR(stats.totalInventoryValue)}
-          icon={IndianRupee}
+          icon={Wallet}
           subtitle="total at selling price"
         />
       </div>

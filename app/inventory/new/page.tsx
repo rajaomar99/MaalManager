@@ -4,6 +4,7 @@ import { ProductForm } from "@/components/ProductForm";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { getCategories } from "@/actions/category.action";
+import { getSupplierNames } from "@/actions/products.action";
 
 export const metadata: Metadata = {
   title: "Add Product | Maal Manager",
@@ -11,7 +12,7 @@ export const metadata: Metadata = {
 
 export default async function NewProductPage() {
   await connection();
-  const categories = await getCategories();
+  const [categories, suppliers] = await Promise.all([getCategories(), getSupplierNames()]);
 
   return (
     <div className="space-y-4">
@@ -26,12 +27,12 @@ export default async function NewProductPage() {
           <h2 className="text-2xl font-semibold tracking-tight">
             Add Product
           </h2>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-base text-muted-foreground">
             Add a new product to your inventory.
           </p>
         </div>
       </div>
-      <ProductForm categories={categories} />
+      <ProductForm categories={categories} suppliers={suppliers} />
     </div>
   );
 }

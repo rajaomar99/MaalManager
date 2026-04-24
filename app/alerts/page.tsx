@@ -12,6 +12,7 @@ import {
   AlertTriangle,
   Package,
   Truck,
+  ShoppingBasket,
   ArrowDown,
 } from "lucide-react";
 import { getLowStockProducts } from "@/actions/products.action";
@@ -19,6 +20,21 @@ import { getLowStockProducts } from "@/actions/products.action";
 export default async function AlertsPage() {
   await connection();
   const lowStockProducts = await getLowStockProducts();
+
+  // Group by supplier; products with no supplier go under null key
+  const grouped = new Map<string | null, typeof lowStockProducts>();
+  for (const p of lowStockProducts) {
+    const key = p.supplierName ?? null;
+    if (!grouped.has(key)) grouped.set(key, []);
+    grouped.get(key)!.push(p);
+  }
+
+  // Sort: named suppliers alphabetically first, then null last
+  const sortedKeys = [...grouped.keys()].sort((a, b) => {
+    if (a === null) return 1;
+    if (b === null) return -1;
+    return a.localeCompare(b);
+  });
 
   return (
     <div className="space-y-6">
@@ -33,7 +49,7 @@ export default async function AlertsPage() {
           <p className="text-base text-muted-foreground">
             {lowStockProducts.length === 0
               ? "All items are well-stocked. 🎉"
-              : `${lowStockProducts.length} item${lowStockProducts.length !== 1 ? "s" : ""} need restocking - sorted by most critical first.`}
+              : `${lowStockProducts.length} item${lowStockProducts.length !== 1 ? "s" : ""} need restocking - grouped by supplier.`}
           </p>
         </div>
         {lowStockProducts.length > 0 && <ShareButtons products={lowStockProducts} />}
@@ -52,85 +68,92 @@ export default async function AlertsPage() {
           </div>
         </Card>
       ) : (
-        <div className="space-y-3">
-          {lowStockProducts.map((p) => (
-            <Card
-              key={p.id}
-              className="transition-shadow hover:shadow-md"
-            >
-              <CardContent className="p-4">
-                {/* Top row: icon + name/badge + restock button (desktop only) */}
-                <div className="flex items-start gap-3">
-                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-muted text-2xl">
-                    {p.categoryIcon}
-                  </div>
+        <div className="space-y-8">
+          {sortedKeys.map((supplier) => (
+            <div key={supplier ?? "__none__"} className="space-y-3">
+              {/* Supplier group header */}
+              <div className="flex items-center gap-2 border-b pb-2">
+                {supplier ? (
+                  <Truck className="h-4 w-4 text-muted-foreground" />
+                ) : <ShoppingBasket className="h-4 w-4 text-muted-foreground" />}
+                <span className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
+                  {supplier ?? "General / Wholesale Market"}
+                </span>
+                <span className="ml-auto text-sm text-muted-foreground">
+                  {grouped.get(supplier)!.length} item{grouped.get(supplier)!.length !== 1 ? "s" : ""}
+                </span>
+              </div>
 
-                  <div className="min-w-0 flex-1 space-y-2">
-                    {/* Name + badge + desktop restock button in same row */}
-                    <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1">
-                      <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
-                        <span className="text-base font-semibold">
-                          {p.name}
-                        </span>
-                        <StockBadge status={p.stockStatus} />
+              {grouped.get(supplier)!.map((p) => (
+                <Card key={p.id} className="transition-shadow hover:shadow-md">
+                  <CardContent className="p-4">
+                    {/* Top row: icon + name/badge + restock button (desktop only) */}
+                    <div className="flex items-start gap-3">
+                      <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-muted text-2xl">
+                        {p.categoryIcon}
                       </div>
-                      <div className="hidden sm:block">
-                        <RestockDialog
-                          productId={p.id}
-                          productName={p.name}
-                          reorderQty={p.reorderQty}
-                          unit={p.unit}
-                        />
-                      </div>
-                    </div>
 
-                    {/* Stats grid */}
-                    <div className="flex flex-wrap gap-x-5 gap-y-1 text-sm">
-                      <div>
-                        <span className="text-muted-foreground">Stock: </span>
-                        <span className="font-semibold text-destructive">
-                          {p.currentStock}
-                        </span>
-                        <span className="text-muted-foreground">
-                          /{p.minStock} {p.unit}s
-                        </span>
-                      </div>
-                      {p.unitsShort > 0 && (
-                        <div className="flex items-center gap-1">
-                          <ArrowDown className="h-3 w-3 text-destructive" />
-                          <span className="font-semibold text-destructive">
-                            {p.unitsShort} short
-                          </span>
+                      <div className="min-w-0 flex-1 space-y-2">
+                        {/* Name + badge + desktop restock button in same row */}
+                        <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1">
+                          <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
+                            <span className="text-base font-semibold">
+                              {p.name}
+                            </span>
+                            <StockBadge status={p.stockStatus} />
+                          </div>
+                          <div className="hidden sm:block">
+                            <RestockDialog
+                              productId={p.id}
+                              productName={p.name}
+                              reorderQty={p.reorderQty}
+                              unit={p.unit}
+                            />
+                          </div>
                         </div>
-                      )}
-                      <div>
-                        <span className="text-muted-foreground">Reorder: </span>
-                        <span className="font-medium">
-                          {p.reorderQty} {p.unit}s
-                        </span>
+
+                        {/* Stats grid */}
+                        <div className="flex flex-wrap gap-x-5 gap-y-1 text-sm">
+                          <div>
+                            <span className="text-muted-foreground">Stock: </span>
+                            <span className="font-semibold text-destructive">
+                              {p.currentStock}
+                            </span>
+                            <span className="text-muted-foreground">
+                              /{p.minStock} {p.unit}s
+                            </span>
+                          </div>
+                          {p.unitsShort > 0 && (
+                            <div className="flex items-center gap-1">
+                              <ArrowDown className="h-3 w-3 text-destructive" />
+                              <span className="font-semibold text-destructive">
+                                {p.unitsShort} short
+                              </span>
+                            </div>
+                          )}
+                          <div>
+                            <span className="text-muted-foreground">Reorder: </span>
+                            <span className="font-medium">
+                              {p.reorderQty} {p.unit}s
+                            </span>
+                          </div>
+                        </div>
                       </div>
                     </div>
 
-                    {p.supplierName && (
-                      <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
-                        <Truck className="h-3.5 w-3.5 shrink-0" />
-                        <span>{p.supplierName}</span>
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-                {/* Mobile-only restock button: full width below */}
-                <div className="mt-3 sm:hidden `*:w-full`">
-                  <RestockDialog
-                    productId={p.id}
-                    productName={p.name}
-                    reorderQty={p.reorderQty}
-                    unit={p.unit}
-                  />
-                </div>
-              </CardContent>
-            </Card>
+                    {/* Mobile-only restock button: full width below */}
+                    <div className="mt-3 sm:hidden *:w-full">
+                      <RestockDialog
+                        productId={p.id}
+                        productName={p.name}
+                        reorderQty={p.reorderQty}
+                        unit={p.unit}
+                      />
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
           ))}
         </div>
       )}

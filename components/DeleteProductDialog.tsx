@@ -48,7 +48,7 @@ export function DeleteProductDialog({
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger
         render={
-          <Button variant="outline" className="min-h-[44px] text-destructive" id="delete-product-btn" />
+          <Button variant="outline" className="min-h-[44px] text-destructive hover:bg-destructive/10" id="delete-product-btn" />
         }
       >
         <Trash2 className="mr-2 h-4 w-4" />

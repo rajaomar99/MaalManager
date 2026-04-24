@@ -28,7 +28,7 @@ export function StatsCard({
     >
       <CardContent className="flex items-start justify-between gap-3 p-5">
         <div className="min-w-0 flex-1 space-y-1">
-          <p className="text-sm font-medium text-muted-foreground">
+          <p className="text-base font-medium text-muted-foreground">
             {title}
           </p>
           <p
@@ -41,7 +41,7 @@ export function StatsCard({
             {value}
           </p>
           {subtitle && (
-            <p className="text-sm text-muted-foreground">{subtitle}</p>
+            <p className="text-base text-muted-foreground">{subtitle}</p>
           )}
         </div>
         <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary/10">

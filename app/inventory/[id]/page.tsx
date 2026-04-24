@@ -25,7 +25,7 @@ import { formatPKR } from "@/lib/format";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { getCategories } from "@/actions/category.action";
-import { getProduct } from "@/actions/products.action";
+import { getProduct, getSupplierNames } from "@/actions/products.action";
 import { parseProductId, productSlug } from "@/lib/utils";
 
 export default async function ProductDetailPage({
@@ -54,7 +54,7 @@ export default async function ProductDetailPage({
 
   // Edit mode
   if (isEditing) {
-    const categories = await getCategories();
+    const [categories, suppliers] = await Promise.all([getCategories(), getSupplierNames()]);
     return (
       <div className="space-y-4">
         <div className="flex items-center gap-3">
@@ -73,6 +73,7 @@ export default async function ProductDetailPage({
         </div>
         <ProductForm
           categories={categories}
+          suppliers={suppliers}
           product={{
             id: product.id,
             name: product.name,
@@ -95,7 +96,7 @@ export default async function ProductDetailPage({
     <div className="space-y-6">
       {/* Header */}
       <div className="space-y-3">
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-start gap-3">
           <Link
             href="/inventory"
             className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-md border bg-background text-muted-foreground hover:bg-accent hover:text-accent-foreground"
@@ -112,7 +113,7 @@ export default async function ProductDetailPage({
               </h2>
               <StockBadge status={stockStatus} />
             </div>
-            <p className="mt-0.5 truncate text-sm text-muted-foreground">
+            <p className="mt-0.5 text-sm text-muted-foreground">
               {product.category.name}
               {product.supplierName && (
                 <>
@@ -144,7 +145,7 @@ export default async function ProductDetailPage({
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardContent className="p-4">
-            <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+            <p className="text-sm font-medium uppercase tracking-wider text-muted-foreground">
               Current Stock
             </p>
             <div className="mt-1 flex items-center gap-2">
@@ -172,35 +173,35 @@ export default async function ProductDetailPage({
         </Card>
         <Card>
           <CardContent className="p-4">
-            <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+            <p className="text-sm font-medium uppercase tracking-wider text-muted-foreground">
               Min Stock / Reorder
             </p>
             <p className="mt-1 text-2xl font-bold">{product.minStock}</p>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-sm text-muted-foreground">
               Reorder qty: {product.reorderQty} {product.unit}s
             </p>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="p-4">
-            <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+            <p className="text-sm font-medium uppercase tracking-wider text-muted-foreground">
               Purchase Price
             </p>
             <p className="mt-1 text-2xl font-bold">
               {formatPKR(Number(product.purchasePrice))}
             </p>
-            <p className="text-xs text-muted-foreground">per {product.unit}</p>
+            <p className="text-sm text-muted-foreground">per {product.unit}</p>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="p-4">
-            <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+            <p className="text-sm font-medium uppercase tracking-wider text-muted-foreground">
               Selling Price
             </p>
             <p className="mt-1 text-2xl font-bold">
               {formatPKR(Number(product.sellingPrice))}
             </p>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-sm text-muted-foreground">
               Margin:{" "}
               {formatPKR(
                 Number(product.sellingPrice) - Number(product.purchasePrice)
@@ -234,7 +235,7 @@ export default async function ProductDetailPage({
                 <TableBody>
                   {product.movements.map((m) => (
                     <TableRow key={m.id}>
-                      <TableCell className="text-xs text-muted-foreground">
+                      <TableCell className="text-[13px] sm:text-sm text-muted-foreground">
                         {new Date(m.createdAt).toLocaleDateString("en-PK", {
                           day: "numeric",
                           month: "short",
@@ -264,7 +265,7 @@ export default async function ProductDetailPage({
                       <TableCell className="text-right">
                         <span
                           className={cn(
-                            "font-semibold tabular-nums",
+                            "font-semibold tabular-nums text-base",
                             m.quantity > 0
                               ? "text-emerald-600 dark:text-emerald-400"
                               : "text-red-600 dark:text-red-400"
@@ -274,7 +275,7 @@ export default async function ProductDetailPage({
                           {m.quantity}
                         </span>
                       </TableCell>
-                      <TableCell className="text-xs text-muted-foreground">
+                      <TableCell className="text-[13px] sm:text-sm text-muted-foreground">
                         {m.note || "—"}
                       </TableCell>
                     </TableRow>

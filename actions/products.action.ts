@@ -361,6 +361,16 @@ export async function getDailyRevenue() {
   );
 }
 
+export async function getSupplierNames(): Promise<string[]> {
+  const products = await prisma.product.findMany({
+    where: { supplierName: { not: null } },
+    select: { supplierName: true },
+    distinct: ["supplierName"],
+    orderBy: { supplierName: "asc" },
+  });
+  return products.map((p) => p.supplierName!);
+}
+
 export async function getLowStockCount() {
   const products = await prisma.product.findMany({
     select: { currentStock: true, minStock: true },

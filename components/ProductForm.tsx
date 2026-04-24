@@ -23,6 +23,7 @@ const UNITS = ["packet", "bottle", "piece", "bag", "pack", "jar", "kg", "litre",
 
 interface ProductFormProps {
   categories: Category[];
+  suppliers?: string[];
   product?: {
     id: number;
     name: string;
@@ -37,7 +38,7 @@ interface ProductFormProps {
   };
 }
 
-export function ProductForm({ categories, product }: ProductFormProps) {
+export function ProductForm({ categories, suppliers = [], product }: ProductFormProps) {
   const router = useRouter();
   const isEdit = !!product;
   const [isPending, startTransition] = useTransition();
@@ -251,10 +252,19 @@ export function ProductForm({ categories, product }: ProductFormProps) {
             <Label htmlFor="supplier-name">Supplier Name (optional)</Label>
             <Input
               id="supplier-name"
-              placeholder="e.g. Tapal Distributor — Anarkali"
+              list="supplier-suggestions"
+              placeholder="e.g. Tapal Distributor"
               value={supplierName}
               onChange={(e) => setSupplierName(e.target.value)}
+              autoComplete="off"
             />
+            {suppliers.length > 0 && (
+              <datalist id="supplier-suggestions">
+                {suppliers.map((s) => (
+                  <option key={s} value={s} />
+                ))}
+              </datalist>
+            )}
           </div>
 
           {/* Submit */}
