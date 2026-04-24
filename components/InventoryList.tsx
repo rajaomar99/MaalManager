@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useMemo } from "react";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -16,7 +16,7 @@ import { Button, buttonVariants } from "@/components/ui/button";
 import { Search, Plus, Package, ExternalLink } from "lucide-react";
 import Link from "next/link";
 import { cn, productSlug } from "@/lib/utils";
-import { formatPKR } from "@/lib/format";
+import { formatPKR, formatLastRestocked } from "@/lib/format";
 import type { ProductWithStatus, Category } from "@/lib/types";
 
 type StatusFilter = "ALL" | "OK" | "LOW" | "OUT";
@@ -52,25 +52,28 @@ export function InventoryList({
     []
   );
 
-  // Apply filters
-  const filtered = products.filter((p) => {
-    const matchesSearch = p.name
-      .toLowerCase()
-      .includes(search.toLowerCase());
-    const matchesCategory =
-      categoryFilter === "ALL" || p.categoryName === categoryFilter;
-    const matchesStatus =
-      statusFilter === "ALL" || p.stockStatus === statusFilter;
-    return matchesSearch && matchesCategory && matchesStatus;
-  });
+  const searchLower = search.toLowerCase();
 
-  // Count by status for filter buttons
-  const counts = {
-    ALL: products.length,
-    OK: products.filter((p) => p.stockStatus === "OK").length,
-    LOW: products.filter((p) => p.stockStatus === "LOW").length,
-    OUT: products.filter((p) => p.stockStatus === "OUT").length,
-  };
+  const filtered = useMemo(
+    () =>
+      products.filter((p) => {
+        if (search && !p.name.toLowerCase().includes(searchLower)) return false;
+        if (categoryFilter !== "ALL" && p.categoryName !== categoryFilter) return false;
+        if (statusFilter !== "ALL" && p.stockStatus !== statusFilter) return false;
+        return true;
+      }),
+    [products, searchLower, categoryFilter, statusFilter]
+  );
+
+  const counts = useMemo(
+    () => ({
+      ALL: products.length,
+      OK: products.filter((p) => p.stockStatus === "OK").length,
+      LOW: products.filter((p) => p.stockStatus === "LOW").length,
+      OUT: products.filter((p) => p.stockStatus === "OUT").length,
+    }),
+    [products]
+  );
 
   return (
     <div className="space-y-4">
@@ -83,11 +86,11 @@ export function InventoryList({
             placeholder="Search products..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="pl-9"
+            className="pl-9 h-11"
           />
         </div>
         <Select value={categoryFilter} onValueChange={(v) => setCategoryFilter(v ?? "ALL")}>
-          <SelectTrigger id="category-filter" className="w-full sm:w-48">
+          <SelectTrigger id="category-filter" className="w-full sm:w-48 h-11">
             <SelectValue placeholder="All Categories" />
           </SelectTrigger>
           <SelectContent>
@@ -101,7 +104,7 @@ export function InventoryList({
         </Select>
         <Link
           href="/inventory/new"
-          className={cn(buttonVariants(), "hidden shrink-0 gap-2 md:flex")}
+          className={cn(buttonVariants({ size: "lg" }), "hidden shrink-0 gap-2 md:flex sm:h-11 sm:px-5")}
           id="add-product-btn"
         >
           <Plus className="h-4 w-4" />
@@ -139,10 +142,10 @@ export function InventoryList({
         <Card className="flex flex-col items-center justify-center gap-3 py-12 text-center">
           <Package className="h-10 w-10 text-muted-foreground/50" />
           <div>
-            <p className="font-medium text-muted-foreground">
+            <p className="font-medium text-muted-foreground text-base">
               No products found
             </p>
-            <p className="text-xs text-muted-foreground/70">
+            <p className="text-[15px] text-muted-foreground/70">
               {search || categoryFilter !== "ALL" || statusFilter !== "ALL"
                 ? "Try adjusting your filters"
                 : "Add your first product to get started"}
@@ -184,6 +187,9 @@ export function InventoryList({
                         </span>
                       )}
                     </div>
+                    <p className="mt-0.5 text-sm text-muted-foreground/60">
+                      {formatLastRestocked(product.lastRestockedAt)}
+                    </p>
                   </div>
                 </div>
 

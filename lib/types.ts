@@ -11,11 +11,13 @@ export interface ProductWithStatus {
   purchasePrice: number;
   sellingPrice: number;
   supplierName: string | null;
+  supplierPhone: string | null;
   createdAt: string;
   updatedAt: string;
   stockStatus: "OK" | "LOW" | "OUT";
   categoryName: string;
   categoryIcon: string;
+  lastRestockedAt: string | null;
 }
 
 export interface DashboardStats {

@@ -14,6 +14,7 @@ type SeedProduct = {
   purchasePrice: number;
   sellingPrice: number;
   supplierName?: string;
+  supplierPhone?: string;
 };
 
 const categories: SeedCategory[] = [
@@ -29,21 +30,21 @@ const categories: SeedCategory[] = [
 ];
 
 const products: SeedProduct[] = [
-  { name: "Tapal Danedar 200g",       category: "Tea & Coffee",    unit: "packet", currentStock: 4,  minStock: 10, reorderQty: 24, purchasePrice: 380, sellingPrice: 420, supplierName: "Tapal Distributor — Anarkali" },
-  { name: "Lipton Yellow Label 100g", category: "Tea & Coffee",    unit: "packet", currentStock: 18, minStock: 8,  reorderQty: 12, purchasePrice: 260, sellingPrice: 290, supplierName: "Unilever Agent" },
-  { name: "Pepsi 1.5L",                category: "Beverages",       unit: "bottle", currentStock: 6,  minStock: 12, reorderQty: 24, purchasePrice: 180, sellingPrice: 220, supplierName: "Pepsi Distributor — Gulberg" },
-  { name: "Coca-Cola 500ml",           category: "Beverages",       unit: "bottle", currentStock: 24, minStock: 12, reorderQty: 24, purchasePrice: 70,  sellingPrice: 90,  supplierName: "Coca-Cola Agent — Liberty" },
-  { name: "Shan Biryani Masala",       category: "Spices",          unit: "packet", currentStock: 3,  minStock: 8,  reorderQty: 24, purchasePrice: 110, sellingPrice: 140, supplierName: "Shan Foods" },
-  { name: "Shan Chicken Masala",       category: "Spices",          unit: "packet", currentStock: 12, minStock: 8,  reorderQty: 24, purchasePrice: 110, sellingPrice: 140, supplierName: "Shan Foods" },
-  { name: "Sunridge Flour 5kg",        category: "Flour & Grains",  unit: "bag",    currentStock: 2,  minStock: 5,  reorderQty: 10, purchasePrice: 1450, sellingPrice: 1550, supplierName: "Sunridge Mills" },
-  { name: "Lays Classic 34g",          category: "Snacks",          unit: "piece",  currentStock: 45, minStock: 20, reorderQty: 60, purchasePrice: 40,  sellingPrice: 50,  supplierName: "Pepsico Snacks" },
-  { name: "Peek Freans Peanut Pik",    category: "Snacks",          unit: "piece",  currentStock: 7,  minStock: 15, reorderQty: 30, purchasePrice: 28,  sellingPrice: 40,  supplierName: "EBM Distributor" },
-  { name: "Olpers Milk 1L",            category: "Dairy",           unit: "pack",   currentStock: 10, minStock: 10, reorderQty: 20, purchasePrice: 270, sellingPrice: 300, supplierName: "Engro Foods Agent" },
-  { name: "Nestle Raita 400g",         category: "Dairy",           unit: "pack",   currentStock: 8,  minStock: 5,  reorderQty: 12, purchasePrice: 210, sellingPrice: 250, supplierName: "Nestle Distributor" },
-  { name: "Safeguard Soap 135g",       category: "Household",       unit: "piece",  currentStock: 20, minStock: 10, reorderQty: 24, purchasePrice: 120, sellingPrice: 150, supplierName: "P&G Agent" },
-  { name: "Surf Excel 500g",           category: "Household",       unit: "packet", currentStock: 3,  minStock: 8,  reorderQty: 12, purchasePrice: 380, sellingPrice: 430, supplierName: "Unilever Agent" },
-  { name: "Dalda Cooking Oil 1L",      category: "Cooking Oil",     unit: "bottle", currentStock: 5,  minStock: 10, reorderQty: 12, purchasePrice: 580, sellingPrice: 650, supplierName: "Dalda Foods" },
-  { name: "Mitchell's Jam 440g",       category: "Spreads",         unit: "jar",    currentStock: 6,  minStock: 5,  reorderQty: 10, purchasePrice: 420, sellingPrice: 490, supplierName: "Mitchell's Distributor" },
+  { name: "Tapal Danedar 200g",       category: "Tea & Coffee",    unit: "packet", currentStock: 4,  minStock: 10, reorderQty: 24, purchasePrice: 380,  sellingPrice: 420,  supplierName: "Tapal Distributor — Anarkali",  supplierPhone: "0321-4567890" },
+  { name: "Lipton Yellow Label 100g", category: "Tea & Coffee",    unit: "packet", currentStock: 18, minStock: 8,  reorderQty: 12, purchasePrice: 260,  sellingPrice: 290,  supplierName: "Unilever Agent",                supplierPhone: "0300-8765432" },
+  { name: "Pepsi 1.5L",               category: "Beverages",       unit: "bottle", currentStock: 6,  minStock: 12, reorderQty: 24, purchasePrice: 180,  sellingPrice: 220,  supplierName: "Pepsi Distributor — Gulberg",   supplierPhone: "0333-1122334" },
+  { name: "Coca-Cola 500ml",          category: "Beverages",       unit: "bottle", currentStock: 24, minStock: 12, reorderQty: 24, purchasePrice: 70,   sellingPrice: 90,   supplierName: "Coca-Cola Agent — Liberty",     supplierPhone: "0311-9988776" },
+  { name: "Shan Biryani Masala",      category: "Spices",          unit: "packet", currentStock: 3,  minStock: 8,  reorderQty: 24, purchasePrice: 110,  sellingPrice: 140,  supplierName: "Shan Foods",                    supplierPhone: "0345-2233445" },
+  { name: "Shan Chicken Masala",      category: "Spices",          unit: "packet", currentStock: 12, minStock: 8,  reorderQty: 24, purchasePrice: 110,  sellingPrice: 140,  supplierName: "Shan Foods",                    supplierPhone: "0345-2233445" },
+  { name: "Sunridge Flour 5kg",       category: "Flour & Grains",  unit: "bag",    currentStock: 2,  minStock: 5,  reorderQty: 10, purchasePrice: 1450, sellingPrice: 1550, supplierName: "Sunridge Mills",                supplierPhone: "0302-5544667" },
+  { name: "Lays Classic 34g",         category: "Snacks",          unit: "piece",  currentStock: 45, minStock: 20, reorderQty: 60, purchasePrice: 40,   sellingPrice: 50,   supplierName: "Pepsico Snacks",                supplierPhone: "0333-6677889" },
+  { name: "Peek Freans Peanut Pik",   category: "Snacks",          unit: "piece",  currentStock: 7,  minStock: 15, reorderQty: 30, purchasePrice: 28,   sellingPrice: 40,   supplierName: "EBM Distributor",               supplierPhone: "0300-3344556" },
+  { name: "Olpers Milk 1L",           category: "Dairy",           unit: "pack",   currentStock: 10, minStock: 10, reorderQty: 20, purchasePrice: 270,  sellingPrice: 300,  supplierName: "Engro Foods Agent",             supplierPhone: "0321-7788990" },
+  { name: "Nestle Raita 400g",        category: "Dairy",           unit: "pack",   currentStock: 8,  minStock: 5,  reorderQty: 12, purchasePrice: 210,  sellingPrice: 250,  supplierName: "Nestle Distributor",            supplierPhone: "0312-4455667" },
+  { name: "Safeguard Soap 135g",      category: "Household",       unit: "piece",  currentStock: 20, minStock: 10, reorderQty: 24, purchasePrice: 120,  sellingPrice: 150,  supplierName: "P&G Agent",                     supplierPhone: "0300-9900112" },
+  { name: "Surf Excel 500g",          category: "Household",       unit: "packet", currentStock: 3,  minStock: 8,  reorderQty: 12, purchasePrice: 380,  sellingPrice: 430,  supplierName: "Unilever Agent",                supplierPhone: "0300-8765432" },
+  { name: "Dalda Cooking Oil 1L",     category: "Cooking Oil",     unit: "bottle", currentStock: 5,  minStock: 10, reorderQty: 12, purchasePrice: 580,  sellingPrice: 650,  supplierName: "Dalda Foods",                   supplierPhone: "0341-1234567" },
+  { name: "Mitchell's Jam 440g",      category: "Spreads",         unit: "jar",    currentStock: 6,  minStock: 5,  reorderQty: 10, purchasePrice: 420,  sellingPrice: 490,  supplierName: "Mitchell's Distributor",        supplierPhone: "0322-8877665" },
 ];
 
 async function main() {
@@ -75,6 +76,7 @@ async function main() {
         purchasePrice: p.purchasePrice,
         sellingPrice: p.sellingPrice,
         supplierName: p.supplierName,
+        supplierPhone: p.supplierPhone,
       },
     });
 

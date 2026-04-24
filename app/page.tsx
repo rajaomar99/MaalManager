@@ -154,9 +154,12 @@ export default async function DashboardPage() {
                           {p.name}
                         </span>
                       </div>
-                      <p className="mt-0.5 text-[15px] text-muted-foreground">
-                        {p.currentStock}/{p.minStock} {p.unit}s · need{" "}
-                        {p.reorderQty}
+                      <p className="mt-0.5 text-sm text-muted-foreground">
+                        <span className="font-medium text-foreground">{p.currentStock}</span>/{p.minStock} {p.unit}s
+                        {" · "}
+                        <span className="font-medium text-destructive">{p.unitsShort} short</span>
+                        {" · "}
+                        reorder {p.reorderQty}
                       </p>
                     </div>
                     <StockBadge status={p.stockStatus} />

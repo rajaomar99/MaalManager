@@ -32,12 +32,17 @@ export function RestockDialog({
 }: RestockDialogProps) {
   const [open, setOpen] = useState(false);
   const [qty, setQty] = useState(reorderQty.toString());
+
+  function handleOpenChange(next: boolean) {
+    if (!next) setQty(reorderQty.toString()); // reset on close
+    setOpen(next);
+  }
   const [isPending, startTransition] = useTransition();
 
   function handleRestock() {
     const quantity = Number(qty);
-    if (!quantity || quantity <= 0) {
-      toast.error("Enter a valid quantity");
+    if (!quantity || quantity <= 0 || !Number.isInteger(quantity)) {
+      toast.error("Enter a valid whole number");
       return;
     }
 
@@ -60,7 +65,7 @@ export function RestockDialog({
   }
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger
         render={
           <Button size="sm" className="min-h-[44px]" id={`restock-btn-${productId}`} />

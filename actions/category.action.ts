@@ -11,7 +11,7 @@ export async function getCategories() {
   return prisma.category.findMany({
     orderBy: { name: "asc" },
     include: { _count: { select: { products: true } } },
-  });
+  }).catch(() => []);
 }
 
 const DEFAULT_ICON = "📦";
@@ -26,7 +26,9 @@ export async function createCategory(
   if (!trimmedName) return { success: false, error: "Category name is required" };
 
   try {
-    const existing = await prisma.category.findFirst({ where: { name: trimmedName } });
+    const existing = await prisma.category.findFirst({
+      where: { name: { equals: trimmedName, mode: "insensitive" } },
+    });
     if (existing) return { success: false, error: "A category with that name already exists" };
 
     const category = await prisma.category.create({
@@ -55,7 +57,7 @@ export async function updateCategory(
 
   try {
     const existing = await prisma.category.findFirst({
-      where: { name: trimmedName, NOT: { id } },
+      where: { name: { equals: trimmedName, mode: "insensitive" }, NOT: { id } },
     });
     if (existing) return { success: false, error: "A category with that name already exists" };
 

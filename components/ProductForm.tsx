@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState, useRef, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -21,9 +21,14 @@ import type { Category } from "@/lib/types";
 
 const UNITS = ["packet", "bottle", "piece", "bag", "pack", "jar", "kg", "litre", "dozen"];
 
+interface SupplierOption {
+  name: string;
+  phone: string | null;
+}
+
 interface ProductFormProps {
   categories: Category[];
-  suppliers?: string[];
+  suppliers?: SupplierOption[];
   product?: {
     id: number;
     name: string;
@@ -35,6 +40,7 @@ interface ProductFormProps {
     purchasePrice: number;
     sellingPrice: number;
     supplierName: string | null;
+    supplierPhone: string | null;
   };
 }
 
@@ -55,7 +61,7 @@ export function ProductForm({ categories, suppliers = [], product }: ProductForm
     product?.minStock?.toString() ?? "5"
   );
   const [reorderQty, setReorderQty] = useState(
-    product?.reorderQty?.toString() ?? "12"
+    product?.reorderQty?.toString() ?? "10"
   );
   const [purchasePrice, setPurchasePrice] = useState(
     product?.purchasePrice?.toString() ?? ""
@@ -63,12 +69,52 @@ export function ProductForm({ categories, suppliers = [], product }: ProductForm
   const [sellingPrice, setSellingPrice] = useState(
     product?.sellingPrice?.toString() ?? ""
   );
-  const [supplierName, setSupplierName] = useState(
-    product?.supplierName ?? ""
+  const [supplierName, setSupplierName] = useState(product?.supplierName ?? "");
+  const [supplierPhone, setSupplierPhone] = useState(product?.supplierPhone ?? "");
+
+  // Build a name → phone lookup from the suppliers list
+  const supplierMap = new Map<string, string | null>(
+    suppliers.map((s) => [s.name, s.phone])
   );
+
+  // Track whether the current phone value was auto-filled by us (vs typed by user).
+  // Starts true if there's an existing phone on the product being edited, so we
+  // don't immediately overwrite it when the component mounts.
+  const phoneAutoFilled = useRef<boolean>(!product?.supplierPhone);
+
+  function handleSupplierNameChange(value: string) {
+    setSupplierName(value);
+
+    const knownPhone = supplierMap.get(value);
+
+    if (supplierMap.has(value)) {
+      // Exact match to a known supplier — always auto-fill the phone.
+      // This covers: picking from datalist, typing an exact existing name.
+      setSupplierPhone(knownPhone ?? "");
+      phoneAutoFilled.current = true;
+    } else if (value === "") {
+      // Supplier name cleared — clear phone only if it was auto-filled
+      if (phoneAutoFilled.current) {
+        setSupplierPhone("");
+      }
+    }
+    // If typing a custom/partial name: leave phone untouched
+  }
+
+  function handlePhoneChange(value: string) {
+    setSupplierPhone(value);
+    // User is manually editing — stop auto-filling on further name changes
+    phoneAutoFilled.current = false;
+  }
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+
+    const trimmedPhone = supplierPhone.trim();
+    if (trimmedPhone && !/^03[0-9]{2}-[0-9]{7}$/.test(trimmedPhone)) {
+      toast.error("Phone must be in format 03XX-XXXXXXX (e.g. 0312-3456789)");
+      return;
+    }
 
     const input = {
       name: name.trim(),
@@ -80,9 +126,9 @@ export function ProductForm({ categories, suppliers = [], product }: ProductForm
       purchasePrice: Number(purchasePrice),
       sellingPrice: Number(sellingPrice),
       supplierName: supplierName.trim() || undefined,
+      supplierPhone: trimmedPhone || undefined,
     };
 
-    // Client-side validation
     if (!input.name) {
       toast.error("Product name is required");
       return;
@@ -98,6 +144,9 @@ export function ProductForm({ categories, suppliers = [], product }: ProductForm
     if (Number.isNaN(input.sellingPrice) || input.sellingPrice <= 0) {
       toast.error("Selling price must be greater than 0");
       return;
+    }
+    if (input.purchasePrice >= input.sellingPrice) {
+      toast.warning("Selling price is not higher than purchase price - margin will be zero or negative");
     }
 
     startTransition(async () => {
@@ -121,7 +170,8 @@ export function ProductForm({ categories, suppliers = [], product }: ProductForm
         <CardHeader>
           <CardTitle>{isEdit ? "Edit Product" : "New Product"}</CardTitle>
         </CardHeader>
-        <CardContent className="space-y-5">
+        <CardContent>
+          <fieldset disabled={isPending} className="space-y-5">
           {/* Name */}
           <div className="space-y-2">
             <Label htmlFor="product-name">Product Name *</Label>
@@ -247,24 +297,36 @@ export function ProductForm({ categories, suppliers = [], product }: ProductForm
             </div>
           </div>
 
-          {/* Supplier */}
-          <div className="space-y-2">
-            <Label htmlFor="supplier-name">Supplier Name (optional)</Label>
-            <Input
-              id="supplier-name"
-              list="supplier-suggestions"
-              placeholder="e.g. Tapal Distributor"
-              value={supplierName}
-              onChange={(e) => setSupplierName(e.target.value)}
-              autoComplete="off"
-            />
-            {suppliers.length > 0 && (
-              <datalist id="supplier-suggestions">
-                {suppliers.map((s) => (
-                  <option key={s} value={s} />
-                ))}
-              </datalist>
-            )}
+          {/* Supplier Name + Phone */}
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div className="space-y-2">
+              <Label htmlFor="supplier-name">Supplier Name (optional)</Label>
+              <Input
+                id="supplier-name"
+                list="supplier-suggestions"
+                placeholder="e.g. Tapal Distributor"
+                value={supplierName}
+                onChange={(e) => handleSupplierNameChange(e.target.value)}
+                autoComplete="off"
+              />
+              {suppliers.length > 0 && (
+                <datalist id="supplier-suggestions">
+                  {suppliers.map((s) => (
+                    <option key={s.name} value={s.name} />
+                  ))}
+                </datalist>
+              )}
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="supplier-phone">Supplier Phone (optional)</Label>
+              <Input
+                id="supplier-phone"
+                placeholder="e.g. 0312-3456789"
+                value={supplierPhone}
+                onChange={(e) => handlePhoneChange(e.target.value)}
+                inputMode="tel"
+              />
+            </div>
           </div>
 
           {/* Submit */}
@@ -286,6 +348,7 @@ export function ProductForm({ categories, suppliers = [], product }: ProductForm
               Cancel
             </Button>
           </div>
+          </fieldset>
         </CardContent>
       </Card>
     </form>

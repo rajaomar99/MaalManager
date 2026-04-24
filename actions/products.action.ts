@@ -26,6 +26,7 @@ interface CreateProductInput {
   purchasePrice: number;
   sellingPrice: number;
   supplierName?: string;
+  supplierPhone?: string;
 }
 
 interface UpdateProductInput extends CreateProductInput {
@@ -60,6 +61,7 @@ export async function createProduct(
         purchasePrice: input.purchasePrice,
         sellingPrice: input.sellingPrice,
         supplierName: input.supplierName?.trim() || null,
+        supplierPhone: input.supplierPhone?.trim() || null,
       },
     });
 
@@ -122,6 +124,7 @@ export async function updateProduct(
         purchasePrice: input.purchasePrice,
         sellingPrice: input.sellingPrice,
         supplierName: input.supplierName?.trim() || null,
+        supplierPhone: input.supplierPhone?.trim() || null,
       },
     });
 
@@ -188,11 +191,17 @@ export async function getFiveLowStockProducts() {
   const products = await prisma.product.findMany({
     include: { category: true },
     orderBy: { currentStock: "asc" },
-  });
+  }).catch(() => []);
 
   return products
     .filter((p) => p.currentStock <= p.minStock)
-    .sort((a, b) => (a.currentStock - a.minStock) - (b.currentStock - b.minStock))
+    .sort((a, b) => {
+      const aOut = a.currentStock === 0;
+      const bOut = b.currentStock === 0;
+      if (aOut && !bOut) return -1;
+      if (!aOut && bOut) return 1;
+      return (b.minStock - b.currentStock) - (a.minStock - a.currentStock);
+    })
     .slice(0, 5)
     .map((p) => ({
       id: p.id,
@@ -210,16 +219,27 @@ export async function getFiveLowStockProducts() {
 
 export async function getLowStockProducts() {
   const products = await prisma.product.findMany({
-    include: { category: true },
+    include: {
+      category: true,
+      movements: {
+        where: { type: "RESTOCK" },
+        orderBy: { createdAt: "desc" },
+        take: 1,
+        select: { createdAt: true },
+      },
+    },
     orderBy: { currentStock: "asc" },
   });
 
   return products
     .filter((p) => p.currentStock <= p.minStock)
-    .sort(
-      (a, b) =>
-        a.currentStock - a.minStock - (b.currentStock - b.minStock)
-    )
+    .sort((a, b) => {
+      const aOut = a.currentStock === 0;
+      const bOut = b.currentStock === 0;
+      if (aOut && !bOut) return -1;
+      if (!aOut && bOut) return 1;
+      return (b.minStock - b.currentStock) - (a.minStock - a.currentStock);
+    })
     .map((p) => ({
       id: p.id,
       name: p.name,
@@ -235,12 +255,22 @@ export async function getLowStockProducts() {
       stockStatus:
         p.currentStock === 0 ? ("OUT" as const) : ("LOW" as const),
       unitsShort: p.minStock - p.currentStock,
+      supplierPhone: p.supplierPhone,
+      lastRestockedAt: p.movements[0]?.createdAt.toISOString() ?? null,
     }));
 }
 
 export async function getProducts() {
   const products = await prisma.product.findMany({
-    include: { category: true },
+    include: {
+      category: true,
+      movements: {
+        where: { type: "RESTOCK" },
+        orderBy: { createdAt: "desc" },
+        take: 1,
+        select: { createdAt: true },
+      },
+    },
     orderBy: { name: "asc" },
   });
 
@@ -266,6 +296,8 @@ export async function getProducts() {
       stockStatus,
       categoryName: p.category.name,
       categoryIcon: p.category.icon,
+      supplierPhone: p.supplierPhone,
+      lastRestockedAt: p.movements[0]?.createdAt.toISOString() ?? null,
     };
   });
 }
@@ -361,14 +393,14 @@ export async function getDailyRevenue() {
   );
 }
 
-export async function getSupplierNames(): Promise<string[]> {
+export async function getSupplierNames(): Promise<{ name: string; phone: string | null }[]> {
   const products = await prisma.product.findMany({
     where: { supplierName: { not: null } },
-    select: { supplierName: true },
+    select: { supplierName: true, supplierPhone: true },
     distinct: ["supplierName"],
     orderBy: { supplierName: "asc" },
   });
-  return products.map((p) => p.supplierName!);
+  return products.map((p) => ({ name: p.supplierName!, phone: p.supplierPhone }));
 }
 
 export async function getLowStockCount() {

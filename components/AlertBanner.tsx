@@ -20,6 +20,8 @@ export function AlertBanner({ count }: { count: number }) {
   return (
     <div
       ref={ref}
+      role="alert"
+      aria-live="polite"
       className="border-b bg-amber-50 dark:bg-amber-950/30"
       style={{ animation: "alertSlideIn 0.35s ease" }}
     >

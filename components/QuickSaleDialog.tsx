@@ -38,7 +38,7 @@ export function QuickSaleDialog({
 
   function handleSale() {
     const quantity = Number(qty);
-    if (!quantity || quantity <= 0 || !Number.isInteger(quantity)) {
+    if (!qty.trim() || !Number.isInteger(quantity) || quantity <= 0) {
       toast.error("Enter a valid whole number");
       return;
     }
@@ -61,18 +61,18 @@ export function QuickSaleDialog({
       }
 
       onUpdate?.(result.currentStock, result.stockStatus);
-      toast.success(`Sale recorded — ${quantity} ${unit}${quantity !== 1 ? "s" : ""} of ${productName}`);
+      toast.success(`Sale recorded - ${quantity} ${unit}${quantity !== 1 ? "s" : ""} of ${productName}`);
       setQty("1");
       setOpen(false);
     });
   }
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={open} onOpenChange={(next) => { if (!next) setQty("1"); setOpen(next); }}>
       <DialogTrigger
         render={
           <Button
-            variant="outline"
+            variant="default"
             size="lg"
             className="min-h-[44px] gap-2"
             id={`sale-btn-${productId}`}

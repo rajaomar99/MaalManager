@@ -44,6 +44,7 @@ export function Navbar({ alertCount = 0 }: { alertCount?: number }) {
               <Link
                 key={href}
                 href={href}
+                aria-current={active ? "page" : undefined}
                 className={cn(
                   "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors",
                   active
@@ -76,6 +77,7 @@ export function Navbar({ alertCount = 0 }: { alertCount?: number }) {
               <li key={href}>
                 <Link
                   href={href}
+                  aria-current={active ? "page" : undefined}
                   className={cn(
                     "relative flex min-h-[60px] flex-col items-center justify-center gap-1 py-2 text-xs font-medium",
                     active ? "text-primary" : "text-muted-foreground"

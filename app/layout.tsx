@@ -43,7 +43,7 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const alertCount = await getLowStockCount();
+  const alertCount = await getLowStockCount().catch(() => 0);
 
   return (
     <html

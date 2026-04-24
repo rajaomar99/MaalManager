@@ -52,11 +52,15 @@ export function CategoryManager({ initialCategories }: CategoryManagerProps) {
   }
 
   function handleUpdate(id: number) {
+    if (!editName.trim()) {
+      toast.error("Category name cannot be empty");
+      return;
+    }
     startTransition(async () => {
       const result = await updateCategory(id, editName, editIcon);
       if (!result.success) {
         toast.error(result.error);
-        return;
+        return; // keep editing so the user can fix and retry
       }
       const resolvedIcon = editIcon.trim() || DEFAULT_ICON;
       setCategories((prev) =>
@@ -105,6 +109,7 @@ export function CategoryManager({ initialCategories }: CategoryManagerProps) {
       const result = await deleteCategory(id);
       if (!result.success) {
         toast.error(result.error);
+        setDeletingId(null);
         return;
       }
       setCategories((prev) => prev.filter((c) => c.id !== id));

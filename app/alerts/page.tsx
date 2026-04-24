@@ -14,8 +14,10 @@ import {
   Truck,
   ShoppingBasket,
   ArrowDown,
+  Phone,
 } from "lucide-react";
 import { getLowStockProducts } from "@/actions/products.action";
+import { formatLastRestocked } from "@/lib/format";
 
 export default async function AlertsPage() {
   await connection();
@@ -72,13 +74,22 @@ export default async function AlertsPage() {
           {sortedKeys.map((supplier) => (
             <div key={supplier ?? "__none__"} className="space-y-3">
               {/* Supplier group header */}
-              <div className="flex items-center gap-2 border-b pb-2">
+              <div className="flex flex-wrap items-center gap-x-3 gap-y-1 border-b pb-2">
                 {supplier ? (
-                  <Truck className="h-4 w-4 text-muted-foreground" />
-                ) : <ShoppingBasket className="h-4 w-4 text-muted-foreground" />}
+                  <Truck className="h-4 w-4 shrink-0 text-muted-foreground" />
+                ) : <ShoppingBasket className="h-4 w-4 shrink-0 text-muted-foreground" />}
                 <span className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
-                  {supplier ?? "General / Wholesale Market"}
+                  {supplier ?? "General Supplier / Wholesale Market"}
                 </span>
+                {grouped.get(supplier)![0].supplierPhone && (
+                  <a
+                    href={`tel:${grouped.get(supplier)![0].supplierPhone}`}
+                    className="flex items-center gap-1 text-sm font-medium text-primary hover:underline"
+                  >
+                    <Phone className="h-3.5 w-3.5" />
+                    {grouped.get(supplier)![0].supplierPhone}
+                  </a>
+                )}
                 <span className="ml-auto text-sm text-muted-foreground">
                   {grouped.get(supplier)!.length} item{grouped.get(supplier)!.length !== 1 ? "s" : ""}
                 </span>
@@ -123,13 +134,17 @@ export default async function AlertsPage() {
                               /{p.minStock} {p.unit}s
                             </span>
                           </div>
-                          {p.unitsShort > 0 && (
+                          {p.unitsShort > 0 ? (
                             <div className="flex items-center gap-1">
                               <ArrowDown className="h-3 w-3 text-destructive" />
                               <span className="font-semibold text-destructive">
                                 {p.unitsShort} short
                               </span>
                             </div>
+                          ) : (
+                            <span className="font-medium text-amber-600 dark:text-amber-400">
+                              At minimum level
+                            </span>
                           )}
                           <div>
                             <span className="text-muted-foreground">Reorder: </span>
@@ -138,6 +153,10 @@ export default async function AlertsPage() {
                             </span>
                           </div>
                         </div>
+
+                        <p className="text-sm text-muted-foreground/60">
+                          {formatLastRestocked(p.lastRestockedAt)}
+                        </p>
                       </div>
                     </div>
 

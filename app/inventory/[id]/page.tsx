@@ -68,7 +68,7 @@ export default async function ProductDetailPage({
             <h2 className="text-2xl font-semibold tracking-tight">
               Edit Product
             </h2>
-            <p className="text-sm text-muted-foreground">{product.name}</p>
+            <p className="text-base text-muted-foreground">{product.name}</p>
           </div>
         </div>
         <ProductForm
@@ -85,6 +85,7 @@ export default async function ProductDetailPage({
             purchasePrice: Number(product.purchasePrice),
             sellingPrice: Number(product.sellingPrice),
             supplierName: product.supplierName,
+            supplierPhone: product.supplierPhone,
           }}
         />
       </div>
@@ -113,7 +114,7 @@ export default async function ProductDetailPage({
               </h2>
               <StockBadge status={stockStatus} />
             </div>
-            <p className="mt-0.5 text-sm text-muted-foreground">
+            <p className="mt-0.5 text-[15px] text-muted-foreground">
               {product.category.name}
               {product.supplierName && (
                 <>
@@ -226,7 +227,7 @@ export default async function ProductDetailPage({
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Date</TableHead>
+                    <TableHead className="pl-4 sm:pl-6">Date</TableHead>
                     <TableHead>Type</TableHead>
                     <TableHead className="text-right">Quantity</TableHead>
                     <TableHead>Note</TableHead>
@@ -235,7 +236,7 @@ export default async function ProductDetailPage({
                 <TableBody>
                   {product.movements.map((m) => (
                     <TableRow key={m.id}>
-                      <TableCell className="text-[13px] sm:text-sm text-muted-foreground">
+                      <TableCell className="pl-4 sm:pl-6 text-[13px] sm:text-sm text-muted-foreground">
                         {new Date(m.createdAt).toLocaleDateString("en-PK", {
                           day: "numeric",
                           month: "short",
