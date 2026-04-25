@@ -17,9 +17,19 @@ export function formatLastRestocked(date: string | null): string {
   if (!date) return "Never restocked";
   const d = new Date(date);
   if (isNaN(d.getTime())) return "Never restocked";
-  const diffDays = Math.floor((Date.now() - d.getTime()) / 86_400_000);
-  if (diffDays < 0) return "Last restocked today";
-  if (diffDays === 0) return "Last restocked today";
-  if (diffDays === 1) return "Last restocked yesterday";
-  return `Last restocked ${diffDays} days ago`;
+  
+  // Calculate relative time ignoring timezone midnight shifts 
+  // by calculating exact millisecond differences.
+  const now = new Date();
+  
+  // Clear time portions to strictly compare active days (local time midnight to midnight)
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const restockDate = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+
+  const diffMs = today.getTime() - restockDate.getTime();
+  const diffDays = Math.round(diffMs / 86_400_000);
+
+  if (diffDays <= 0) return "Restocked today";
+  if (diffDays === 1) return "Restocked yesterday";
+  return `Restocked ${diffDays} days ago`;
 }

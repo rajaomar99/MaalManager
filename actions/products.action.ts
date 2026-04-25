@@ -49,39 +49,71 @@ export async function createProduct(
     return { success: false, error: "Prices must be greater than 0" };
   }
 
-  try {
-    const product = await prisma.product.create({
-      data: {
-        name: input.name.trim(),
-        categoryId: input.categoryId,
-        unit: input.unit,
-        currentStock: input.currentStock,
-        minStock: input.minStock,
-        reorderQty: input.reorderQty,
-        purchasePrice: input.purchasePrice,
-        sellingPrice: input.sellingPrice,
-        supplierName: input.supplierName?.trim() || null,
-        supplierPhone: input.supplierPhone?.trim() || null,
+  const sPhone = input.supplierPhone?.trim();
+  const sName = input.supplierName?.trim();
+
+  if (sPhone && sName) {
+    const existingPhone = await prisma.product.findFirst({
+      where: {
+        supplierPhone: sPhone,
+        supplierName: { not: sName },
       },
     });
+    if (existingPhone) {
+      return {
+        success: false,
+        error: `Phone ${sPhone} is already registered to supplier "${existingPhone.supplierName}"`,
+      };
+    }
+  }
 
-    // Record opening stock movement if stock > 0
-    if (input.currentStock > 0) {
-      await prisma.stockMovement.create({
+  try {
+    let newProductId: number;
+
+    await prisma.$transaction(async (tx) => {
+      const product = await tx.product.create({
         data: {
-          productId: product.id,
-          type: "RESTOCK",
-          quantity: input.currentStock,
-          note: "Initial stock",
+          name: input.name.trim(),
+          categoryId: input.categoryId,
+          unit: input.unit,
+          currentStock: input.currentStock,
+          minStock: input.minStock,
+          reorderQty: input.reorderQty,
+          purchasePrice: input.purchasePrice,
+          sellingPrice: input.sellingPrice,
+          supplierName: input.supplierName?.trim() || null,
+          supplierPhone: input.supplierPhone?.trim() || null,
         },
       });
-    }
+
+      newProductId = product.id;
+
+      // Record opening stock movement if stock > 0
+      if (input.currentStock > 0) {
+        await tx.stockMovement.create({
+          data: {
+            productId: product.id,
+            type: "RESTOCK",
+            quantity: input.currentStock,
+            note: "Initial stock",
+          },
+        });
+      }
+
+      // Sync phone numbers for all products with the same supplier
+      if (product.supplierName) {
+        await tx.product.updateMany({
+          where: { supplierName: product.supplierName },
+          data: { supplierPhone: product.supplierPhone },
+        });
+      }
+    });
 
     revalidatePath("/");
     revalidatePath("/inventory");
     revalidatePath("/alerts");
 
-    return { success: true, id: product.id };
+    return { success: true, id: newProductId! };
   } catch (error) {
     console.error("createProduct action error:", error);
     return { success: false, error: "Failed to create product" };
@@ -102,6 +134,24 @@ export async function updateProduct(
   }
   if (input.purchasePrice <= 0 || input.sellingPrice <= 0) {
     return { success: false, error: "Prices must be greater than 0" };
+  }
+
+  const sPhone = input.supplierPhone?.trim();
+  const sName = input.supplierName?.trim();
+
+  if (sPhone && sName) {
+    const existingPhone = await prisma.product.findFirst({
+      where: {
+        supplierPhone: sPhone,
+        supplierName: { not: sName },
+      },
+    });
+    if (existingPhone) {
+      return {
+        success: false,
+        error: `Phone ${sPhone} is already registered to supplier "${existingPhone.supplierName}"`,
+      };
+    }
   }
 
   try {
@@ -138,6 +188,15 @@ export async function updateProduct(
             quantity: qtyChange,
             note: `Manual stock adjustment from ${existing.currentStock} to ${input.currentStock}`,
           },
+        });
+      }
+
+      // Sync phone numbers across all products with the same supplier
+      const newSupplierName = input.supplierName?.trim() || null;
+      if (newSupplierName) {
+        await tx.product.updateMany({
+          where: { supplierName: newSupplierName },
+          data: { supplierPhone: input.supplierPhone?.trim() || null },
         });
       }
     });

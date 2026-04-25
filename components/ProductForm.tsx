@@ -107,13 +107,11 @@ export function ProductForm({ categories, suppliers = [], product }: ProductForm
       // This covers: picking from datalist, typing an exact existing name.
       setSupplierPhone(knownPhone ?? "");
       phoneAutoFilled.current = true;
-    } else if (value === "") {
-      // Supplier name cleared — clear phone only if it was auto-filled
-      if (phoneAutoFilled.current) {
-        setSupplierPhone("");
-      }
+    } else {
+      // Name changed to a new/different supplier — clear the phone number
+      setSupplierPhone("");
+      phoneAutoFilled.current = false;
     }
-    // If typing a custom/partial name: leave phone untouched
   }
 
   function handlePhoneChange(value: string) {
