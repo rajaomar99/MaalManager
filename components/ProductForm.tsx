@@ -12,11 +12,24 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Loader2, Save } from "lucide-react";
+import { Loader2, Save, Check, ChevronsUpDown } from "lucide-react";
 import { toast } from "sonner";
 import { createProduct, updateProduct } from "@/actions/products.action";
-import { productSlug } from "@/lib/utils";
+import { cn, productSlug } from "@/lib/utils";
 import type { Category } from "@/lib/types";
 
 const UNITS = ["packet", "bottle", "piece", "bag", "pack", "jar", "kg", "litre", "dozen"];
@@ -71,6 +84,8 @@ export function ProductForm({ categories, suppliers = [], product }: ProductForm
   );
   const [supplierName, setSupplierName] = useState(product?.supplierName ?? "");
   const [supplierPhone, setSupplierPhone] = useState(product?.supplierPhone ?? "");
+  
+  const [openSupplier, setOpenSupplier] = useState(false);
 
   // Build a name → phone lookup from the suppliers list
   const supplierMap = new Map<string, string | null>(
@@ -299,23 +314,86 @@ export function ProductForm({ categories, suppliers = [], product }: ProductForm
 
           {/* Supplier Name + Phone */}
           <div className="grid gap-4 sm:grid-cols-2">
-            <div className="space-y-2">
+            <div className="space-y-2 flex flex-col">
               <Label htmlFor="supplier-name">Supplier Name (optional)</Label>
-              <Input
-                id="supplier-name"
-                list="supplier-suggestions"
-                placeholder="e.g. Tapal Distributor"
-                value={supplierName}
-                onChange={(e) => handleSupplierNameChange(e.target.value)}
-                autoComplete="off"
-              />
-              {suppliers.length > 0 && (
-                <datalist id="supplier-suggestions">
-                  {suppliers.map((s) => (
-                    <option key={s.name} value={s.name} />
-                  ))}
-                </datalist>
-              )}
+              <div className="relative w-full">
+                <Popover open={openSupplier} onOpenChange={setOpenSupplier}>
+                  <PopoverTrigger
+                    render={
+                      <Button
+                        id="supplier-name"
+                        variant="outline"
+                        role="combobox"
+                        className="w-full justify-between font-normal"
+                      >
+                        {supplierName
+                          ? suppliers.find((s) => s.name === supplierName)?.name || supplierName
+                          : "Select or enter supplier..."}
+                        <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                      </Button>
+                    }
+                  />
+                  <PopoverContent className="w-[var(--anchor-width)] p-0" side="top">
+                  <Command filter={(value, search) => {
+                    if (value === "create_new_item") return 1;
+                    if (value.toLowerCase().includes(search.toLowerCase().trim())) return 1;
+                    return 0;
+                  }}>
+                    <CommandInput
+                      autoFocus={false}
+                      placeholder="Search or enter supplier..."
+                      value={supplierName}
+                      onValueChange={(val) => {
+                         handleSupplierNameChange(val);
+                      }}
+                    />
+                    <CommandList className="max-h-[200px] overflow-y-auto [&::-webkit-scrollbar]:!block [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-border [&::-webkit-scrollbar-thumb]:rounded-full">
+                      <CommandEmpty>No supplier found.</CommandEmpty>
+                      <CommandGroup>
+                        {supplierName && !suppliers.some(s => s.name.toLowerCase() === supplierName.trim().toLowerCase()) && (
+                          <CommandItem
+                            value="create_new_item"
+                            onSelect={() => {
+                              handleSupplierNameChange(supplierName.trim());
+                              setOpenSupplier(false);
+                            }}
+                            className="font-medium text-primary cursor-pointer mt-1 border border-border"
+                          >
+                            <Check className="mr-2 h-4 w-4 opacity-0" />
+                            Create new: "{supplierName}"
+                          </CommandItem>
+                        )}
+                        {suppliers.map((s) => (
+                          <CommandItem
+                            key={s.name}
+                            value={s.name}
+                            onSelect={(currentValue) => {
+                              // shadcn command item value is always lowercase
+                              const actualSupplier = suppliers.find(sup => sup.name.toLowerCase() === currentValue);
+                              if(actualSupplier) {
+                                handleSupplierNameChange(actualSupplier.name);
+                              } else {
+                                handleSupplierNameChange(currentValue);
+                              }
+                              setOpenSupplier(false);
+                            }}
+                            className="cursor-pointer"
+                          >
+                            <Check
+                              className={cn(
+                                "mr-2 h-4 w-4",
+                                supplierName.toLowerCase() === s.name.toLowerCase() ? "opacity-100" : "opacity-0"
+                              )}
+                            />
+                            {s.name}
+                          </CommandItem>
+                        ))}
+                      </CommandGroup>
+                    </CommandList>
+                  </Command>
+                </PopoverContent>
+                </Popover>
+              </div>
             </div>
             <div className="space-y-2">
               <Label htmlFor="supplier-phone">Supplier Phone (optional)</Label>

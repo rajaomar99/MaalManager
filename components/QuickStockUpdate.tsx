@@ -22,6 +22,12 @@ export function QuickStockUpdate({
   const [stock, setStock] = useState(currentStock);
   const [isPending, startTransition] = useTransition();
 
+  // Sync local state when the server prop changes (e.g., from a revalidatePath)
+  // This ensures QuickSale or other outward actions correctly update this component
+  if (currentStock !== stock && !isPending) {
+    setStock(currentStock);
+  }
+
   function handleDelta(delta: number) {
     const optimisticStock = stock + delta;
     if (optimisticStock < 0) {
