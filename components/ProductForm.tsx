@@ -150,6 +150,10 @@ export function ProductForm({ categories, suppliers = [], product }: ProductForm
       toast.error("Please select a category");
       return;
     }
+    if (input.supplierPhone && !input.supplierName) {
+      toast.error("Supplier name is required if a supplier phone number is provided");
+      return;
+    }
     if (Number.isNaN(input.purchasePrice) || input.purchasePrice <= 0) {
       toast.error("Purchase price must be greater than 0");
       return;
