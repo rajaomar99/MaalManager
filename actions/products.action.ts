@@ -112,20 +112,34 @@ export async function updateProduct(
       return { success: false, error: "Product not found" };
     }
 
-    await prisma.product.update({
-      where: { id: input.id },
-      data: {
-        name: input.name.trim(),
-        categoryId: input.categoryId,
-        unit: input.unit,
-        currentStock: input.currentStock,
-        minStock: input.minStock,
-        reorderQty: input.reorderQty,
-        purchasePrice: input.purchasePrice,
-        sellingPrice: input.sellingPrice,
-        supplierName: input.supplierName?.trim() || null,
-        supplierPhone: input.supplierPhone?.trim() || null,
-      },
+    await prisma.$transaction(async (tx) => {
+      await tx.product.update({
+        where: { id: input.id },
+        data: {
+          name: input.name.trim(),
+          categoryId: input.categoryId,
+          unit: input.unit,
+          currentStock: input.currentStock,
+          minStock: input.minStock,
+          reorderQty: input.reorderQty,
+          purchasePrice: input.purchasePrice,
+          sellingPrice: input.sellingPrice,
+          supplierName: input.supplierName?.trim() || null,
+          supplierPhone: input.supplierPhone?.trim() || null,
+        },
+      });
+
+      if (existing.currentStock !== input.currentStock) {
+        const qtyChange = input.currentStock - existing.currentStock;
+        await tx.stockMovement.create({
+          data: {
+            productId: input.id,
+            type: "ADJUSTMENT",
+            quantity: qtyChange,
+            note: `Manual stock adjustment from ${existing.currentStock} to ${input.currentStock}`,
+          },
+        });
+      }
     });
 
     revalidatePath("/");
