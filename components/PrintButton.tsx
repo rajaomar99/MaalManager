@@ -103,7 +103,7 @@ export function ShareButtons({ products }: ShareButtonsProps) {
       doc.setFontSize(9.5);
       items.forEach((p, idx) => {
         const short = p.minStock - p.currentStock;
-        const shortage = short > 0 ? `${short} ${p.unit}s short` : "At threshold";
+        const shortage = short > 0 ? `${short} ${p.unit}s short` : "At minimum level";
         const cells = [
           `${globalIdx++}`,
           p.name,
@@ -155,7 +155,7 @@ export function ShareButtons({ products }: ShareButtonsProps) {
     const sections = groups.map(([supplier, items]) => {
       const lines = items.map((p) => {
         const short = p.minStock - p.currentStock;
-        const shortage = short > 0 ? `${short} ${p.unit}s short` : "At threshold";
+        const shortage = short > 0 ? `${short} ${p.unit}s short` : "At minimum level";
         return `${globalIdx++}. *${p.name}*\n   Stock: ${p.currentStock}/${p.minStock} ${p.unit}s\n   Shortage: ${shortage}\n   Reorder: ${p.reorderQty} ${p.unit}s`;
       });
       return `- *${supplier}*\n\n` + lines.join("\n\n");
