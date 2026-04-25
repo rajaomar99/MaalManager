@@ -79,7 +79,7 @@ export default async function AlertsPage() {
                   <Truck className="h-4 w-4 shrink-0 text-muted-foreground" />
                 ) : <ShoppingBasket className="h-4 w-4 shrink-0 text-muted-foreground" />}
                 <span className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
-                  {supplier ?? "General Supplier / Wholesale Market"}
+                  {supplier ?? "General / Wholesale Market"}
                 </span>
                 {grouped.get(supplier)![0].supplierPhone && (
                   <a

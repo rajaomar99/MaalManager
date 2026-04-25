@@ -27,14 +27,14 @@ function getDate() {
 function groupBySupplier(products: Product[]) {
   const map = new Map<string, Product[]>();
   for (const p of products) {
-    const key = p.supplierName ?? "General Supplier / Wholesale Market";
+    const key = p.supplierName ?? "General / Wholesale Market";
     if (!map.has(key)) map.set(key, []);
     map.get(key)!.push(p);
   }
   // Named suppliers alphabetically, "No Supplier Assigned" last
   return [...map.entries()].sort(([a], [b]) => {
-    if (a === "General Supplier / Wholesale Market") return 1;
-    if (b === "General Supplier / Wholesale Market") return -1;
+    if (a === "General / Wholesale Market") return 1;
+    if (b === "General / Wholesale Market") return -1;
     return a.localeCompare(b);
   });
 }
