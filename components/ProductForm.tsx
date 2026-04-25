@@ -333,7 +333,11 @@ export function ProductForm({ categories, suppliers = [], product }: ProductForm
                       </Button>
                     }
                   />
-                  <PopoverContent className="w-[var(--anchor-width)] p-0" side="top">
+                  <PopoverContent 
+                    className="w-[var(--anchor-width)] p-0" 
+                    side="top"
+                    initialFocus={(type) => (type === "touch" ? false : true)}
+                  >
                   <Command filter={(value, search) => {
                     if (value === "create_new_item") return 1;
                     if (value.toLowerCase().includes(search.toLowerCase().trim())) return 1;
