@@ -174,7 +174,7 @@ export function ShareButtons({ products }: ShareButtonsProps) {
   }
 
   return (
-    <div className="flex gap-2">
+    <div className="flex gap-2 mb-4 md:mb-0">
       <Button variant="outline" size="lg" className="gap-2" onClick={handleDownload}>
         <Download className="h-4 w-4" />
         Download PDF
