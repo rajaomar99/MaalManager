@@ -41,7 +41,10 @@ function formatRelativeTime(dateStr: string | Date): string {
   const diffHours = Math.floor(diffMins / 60);
   if (diffHours < 24) return `${diffHours}h ago`;
   const diffDays = Math.floor(diffHours / 24);
-  if (diffDays < 7) return `${diffDays}d ago`;
+  if (diffDays < 7) {
+    const remainingHours = diffHours % 24;
+    return remainingHours > 0 ? `${diffDays}d ${remainingHours}h ago` : `${diffDays}d ago`;
+  }
   return new Date(dateStr).toLocaleDateString("en-PK", {
     day: "numeric",
     month: "short",
