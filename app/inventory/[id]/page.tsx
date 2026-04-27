@@ -241,11 +241,13 @@ export default async function ProductDetailPage({
                           day: "numeric",
                           month: "short",
                           year: "numeric",
+                          timeZone: "Asia/Karachi",
                         })}
                         {" · "}
                         {new Date(m.createdAt).toLocaleTimeString("en-PK", {
                           hour: "2-digit",
                           minute: "2-digit",
+                          timeZone: "Asia/Karachi",
                         })}
                       </TableCell>
                       <TableCell>
